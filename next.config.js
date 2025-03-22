@@ -5,6 +5,13 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  webpack: (config) => {
+    config.resolve.fallback = {
+      fs: false, // 防止 'fs' 錯誤，僅做 fallback，不應真正依賴 fs
+    };
+    return config;
+  },
+};
 
 export default config;

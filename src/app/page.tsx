@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -43,13 +42,13 @@ export default function Home() {
       questionText: "Which of these is an example of cyberbullying?",
       answerOptions: [
         { answerText: "Sending a friend a birthday message", isCorrect: false },
-        { answerText: "Asking to borrow someone's notes", isCorrect: false },
+        { answerText: "Asking to borrow someone&apos;s notes", isCorrect: false },
         { answerText: "Posting embarrassing photos of someone without permission", isCorrect: true },
         { answerText: "Inviting classmates to an online study group", isCorrect: false },
       ],
     },
     {
-      questionText: "What is 'digital footprint'?",
+      questionText: "What is &apos;digital footprint&apos;?",
       answerOptions: [
         { answerText: "A measurement of how much time you spend online", isCorrect: false },
         { answerText: "The trail of data you create while using the internet", isCorrect: true },
@@ -180,7 +179,7 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-bold mb-2">Digital Ethics</h3>
-              <p>Following ethical codes of conduct online, respecting others' rights</p>
+              <p>Following ethical codes of conduct online, respecting others&apos; rights</p>
             </div>
             <div className="flex flex-col items-center text-center">
               <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mb-4">
@@ -252,11 +251,11 @@ export default function Home() {
                   You scored {score} out of {questions.length}
                 </p>
                 {score === questions.length ? (
-                  <p className="mb-8 text-green-300">Perfect score! You're a digital citizenship expert!</p>
+                  <p className="mb-8 text-green-300">Perfect score! You&apos;re a digital citizenship expert!</p>
                 ) : score >= questions.length / 2 ? (
                   <p className="mb-8 text-yellow-300">Good job! You have a solid understanding of digital citizenship.</p>
                 ) : (
-                  <p className="mb-8 text-red-300">There's room for improvement. Explore our resources to learn more!</p>
+                  <p className="mb-8 text-red-300">There&apos;s room for improvement. Explore our resources to learn more!</p>
                 )}
                 <button
                   onClick={resetQuiz}
