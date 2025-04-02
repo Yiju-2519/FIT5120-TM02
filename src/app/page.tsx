@@ -1,399 +1,505 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
+import DigitalCitizenshipQuiz from "./components/DigitalCitizenshipQuiz";
 
-interface AnswerOption {
-  answerText: string;
-  isCorrect: boolean;
-}
-
-interface Question {
-  questionText: string;
-  answerOptions: AnswerOption[];
+// Define the data breach type
+interface Breach {
+  name: string;
+  title: string;
+  domain: string;
+  breachDate: string;
+  description: string;
+  dataClasses: string[];
+  pwnCount?: number;
 }
 
 export default function Home() {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [showScore, setShowScore] = useState(false);
-  const [score, setScore] = useState(0);
-  const [gameStarted, setGameStarted] = useState(false);
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<null | "secure" | "at-risk">(null);
+  const [error, setError] = useState("");
+  const [breaches, setBreaches] = useState<Breach[]>([]);
 
-  const questions: Question[] = [
-    {
-      questionText: "Which of the following is NOT a good password practice?",
-      answerOptions: [
-        { answerText: "Using different passwords for different accounts", isCorrect: false },
-        { answerText: "Including special characters and numbers", isCorrect: false },
-        { answerText: "Writing down your passwords on a sticky note on your monitor", isCorrect: true },
-        { answerText: "Using a password manager", isCorrect: false },
-      ],
-    },
-    {
-      questionText: "What should you do before sharing information online?",
-      answerOptions: [
-        { answerText: "Share it as quickly as possible to be the first", isCorrect: false },
-        { answerText: "Verify the source and accuracy of the information", isCorrect: true },
-        { answerText: "Add more dramatic details to make it interesting", isCorrect: false },
-        { answerText: "Tag as many friends as possible", isCorrect: false },
-      ],
-    },
-    {
-      questionText: "Which of these is an example of cyberbullying?",
-      answerOptions: [
-        { answerText: "Sending a friend a birthday message", isCorrect: false },
-        { answerText: "Asking to borrow someone&apos;s notes", isCorrect: false },
-        { answerText: "Posting embarrassing photos of someone without permission", isCorrect: true },
-        { answerText: "Inviting classmates to an online study group", isCorrect: false },
-      ],
-    },
-    {
-      questionText: "What is &apos;digital footprint&apos;?",
-      answerOptions: [
-        { answerText: "A measurement of how much time you spend online", isCorrect: false },
-        { answerText: "The trail of data you create while using the internet", isCorrect: true },
-        { answerText: "A type of computer virus", isCorrect: false },
-        { answerText: "The size of files on your computer", isCorrect: false },
-      ],
-    },
-    {
-      questionText: "What should you do if you receive a suspicious email asking for personal information?",
-      answerOptions: [
-        { answerText: "Reply with the information requested", isCorrect: false },
-        { answerText: "Click on any links to see where they lead", isCorrect: false },
-        { answerText: "Forward it to all your contacts to warn them", isCorrect: false },
-        { answerText: "Delete it or report it as phishing", isCorrect: true },
-      ],
-    },
-  ];
+  const checkEmail = async () => {
+    // Reset states
+    setIsLoading(true);
+    setError("");
+    setResult(null);
+    setBreaches([]);
 
-  const handleAnswerClick = (isCorrect: boolean) => {
-    if (isCorrect) {
-      setScore(score + 1);
+    if (!email || !email.includes("@")) {
+      setError("Please enter a valid email address");
+      setIsLoading(false);
+      return;
     }
 
-    const nextQuestion = currentQuestion + 1;
-    if (nextQuestion < questions.length) {
-      setCurrentQuestion(nextQuestion);
-    } else {
-      setShowScore(true);
+    try {
+      // Call the server-side API route
+      const response = await fetch('/api/check-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.status === 429) {
+        setError("Too many requests. Please try again in a moment.");
+        setIsLoading(false);
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to check email');
+      }
+
+      const data = await response.json();
+      
+      if (data.status === 'at-risk') {
+        setResult("at-risk");
+        setBreaches(data.breaches || []);
+      } else {
+        setResult("secure");
+      }
+    } catch (err) {
+      console.error("Error checking email:", err);
+      setError("Failed to check email security. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const resetQuiz = () => {
-    setCurrentQuestion(0);
-    setShowScore(false);
-    setScore(0);
-    setGameStarted(false);
+  // Format date display
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   };
-
-  // Get the current question safely
-  const currentQuestionData = currentQuestion < questions.length ? questions[currentQuestion] : null;
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-600 to-blue-900 text-white">
+    <main className="min-h-screen flex flex-col bg-[#eef6ff]">
       {/* Navigation bar */}
-      <nav className="flex items-center justify-between p-6 bg-blue-800/50 backdrop-blur-sm">
-        <div className="text-2xl font-bold">Digital Citizenship</div>
-        <div className="flex gap-6">
-          <Link href="/" className="hover:text-blue-200 transition-colors">Home</Link>
-          <Link href="#about" className="hover:text-blue-200 transition-colors">About Us</Link>
-          <Link href="#resources" className="hover:text-blue-200 transition-colors">Resources</Link>
-          <Link href="#game" className="hover:text-blue-200 transition-colors">Quiz Game</Link>
-          <Link href="#contact" className="hover:text-blue-200 transition-colors">Contact Us</Link>
+      <nav className="sticky top-0 z-50 bg-white shadow-sm">
+        <div className="max-w-[1400px] mx-auto px-12 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12">
+              <Image 
+                src="/caknak-logo-2.png" 
+                alt="caKnak" 
+                width={48} 
+                height={48}
+                className="w-full h-auto"
+              />
+            </div>
+            <span className="text-xl font-medium text-gray-700">caKnak</span>
+          </div>
+          <div className="flex gap-10">
+            <Link href="/data-breach" className="text-gray-600 hover:text-blue-600 text-sm font-medium">Data Breach</Link>
+            <Link href="/recovery-steps" className="text-gray-600 hover:text-blue-600 text-sm font-medium">Recovery Steps</Link>
+            <Link href="/education-center" className="text-gray-600 hover:text-blue-600 text-sm font-medium">Education Center</Link>
+            <Link href="/knowledge-quiz" className="text-gray-600 hover:text-blue-600 text-sm font-medium">Knowledge Quiz</Link>
+            <Link href="/faq" className="text-gray-600 hover:text-blue-600 text-sm font-medium">FAQ</Link>
+          </div>
         </div>
       </nav>
 
-      {/* Hero section */}
-      <section className="flex flex-col items-center justify-center py-20 px-4 text-center">
-        <h1 className="text-5xl md:text-7xl font-extrabold mb-6">
-          Fostering <span className="text-blue-300">Digital Citizens</span>
+      {/* Hero section with email checker */}
+      <section className="py-16 px-4 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800 max-w-4xl mx-auto">
+          Enhance Your Digital Citizenship, Starting with Email Security
         </h1>
-        <p className="text-xl md:text-2xl max-w-3xl mb-10">
-          Guide the next generation to be responsible, ethical, and empathetic digital world citizens
-        </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <Link
-            href="#resources"
-            className="bg-white text-blue-900 px-8 py-3 rounded-full font-bold hover:bg-blue-100 transition-colors"
-          >
-            Explore Resources
-          </Link>
-          <Link
-            href="#join"
-            className="bg-transparent border-2 border-white px-8 py-3 rounded-full font-bold hover:bg-white/10 transition-colors"
-          >
-            Join Us
-          </Link>
-        </div>
-      </section>
-
-      {/* About us */}
-      <section id="about" className="py-20 px-6 bg-white/5 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold mb-10 text-center">About the Digital Citizenship Program</h2>
-          <div className="grid md:grid-cols-3 gap-10">
-            <div className="bg-blue-800/30 p-6 rounded-lg backdrop-blur-sm">
-              <h3 className="text-2xl font-bold mb-4">Our Mission</h3>
-              <p>We are committed to helping young people and adults develop the necessary skills, knowledge, and attitudes to participate safely, ethically, and responsibly in the digital world.</p>
-            </div>
-            <div className="bg-blue-800/30 p-6 rounded-lg backdrop-blur-sm">
-              <h3 className="text-2xl font-bold mb-4">Why It Matters</h3>
-              <p>In an increasingly digital world, cultivating responsible digital citizens is essential for creating a safe, inclusive, and beneficial online environment.</p>
-            </div>
-            <div className="bg-blue-800/30 p-6 rounded-lg backdrop-blur-sm">
-              <h3 className="text-2xl font-bold mb-4">Our Approach</h3>
-              <p>We foster critical thinking, digital literacy, and ethical decision-making through educational resources, workshops, and community engagement activities.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Core elements */}
-      <section className="py-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold mb-16 text-center">Core Elements of Digital Citizenship</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="flex flex-col items-center text-center">
-              <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-2">Digital Safety</h3>
-              <p>Protecting personal information and device security, mitigating online risks</p>
-            </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-2">Digital Literacy</h3>
-              <p>Critical evaluation of online information, identifying misinformation</p>
-            </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-2">Digital Ethics</h3>
-              <p>Following ethical codes of conduct online, respecting others&apos; rights</p>
-            </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-2">Digital Participation</h3>
-              <p>Actively engaging in online communities, contributing positively to the digital world</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Resources section */}
-      <section id="resources" className="py-20 px-6 bg-white/5 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold mb-10 text-center">Educational Resources</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-blue-800/30 rounded-lg overflow-hidden">
-              <div className="h-48 bg-blue-700"></div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2">Teacher Resources</h3>
-                <p className="mb-4">Lesson plans, activities, and teaching materials for educators to promote digital citizenship awareness in the classroom.</p>
-                <Link href="#" className="text-blue-300 hover:text-blue-200">Learn More →</Link>
-              </div>
-            </div>
-            <div className="bg-blue-800/30 rounded-lg overflow-hidden">
-              <div className="h-48 bg-blue-700"></div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2">Parent Guides</h3>
-                <p className="mb-4">Help parents understand how to foster digital citizenship skills at home, including communication techniques and practical tools.</p>
-                <Link href="#" className="text-blue-300 hover:text-blue-200">Learn More →</Link>
-              </div>
-            </div>
-            <div className="bg-blue-800/30 rounded-lg overflow-hidden">
-              <div className="h-48 bg-blue-700"></div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2">Student Workshops</h3>
-                <p className="mb-4">Interactive workshops designed for students of different age groups to learn digital citizenship skills through examples and activities.</p>
-                <Link href="#" className="text-blue-300 hover:text-blue-200">Learn More →</Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Quiz Game Section */}
-      <section id="game" className="py-20 px-6">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold mb-10 text-center">Test Your Digital Citizenship Knowledge</h2>
-          <div className="bg-blue-800/30 p-8 rounded-lg backdrop-blur-sm">
-            {!gameStarted ? (
-              <div className="text-center">
-                <p className="text-xl mb-8">
-                  How well do you understand digital citizenship? Take this quick quiz to find out!
-                </p>
-                <button
-                  onClick={() => setGameStarted(true)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full transition-colors"
-                >
-                  Start Quiz
-                </button>
-              </div>
-            ) : showScore ? (
-              <div className="text-center">
-                <h3 className="text-2xl font-bold mb-4">Quiz Complete!</h3>
-                <p className="text-xl mb-6">
-                  You scored {score} out of {questions.length}
-                </p>
-                {score === questions.length ? (
-                  <p className="mb-8 text-green-300">Perfect score! You&apos;re a digital citizenship expert!</p>
-                ) : score >= questions.length / 2 ? (
-                  <p className="mb-8 text-yellow-300">Good job! You have a solid understanding of digital citizenship.</p>
-                ) : (
-                  <p className="mb-8 text-red-300">There&apos;s room for improvement. Explore our resources to learn more!</p>
-                )}
-                <button
-                  onClick={resetQuiz}
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full transition-colors"
-                >
-                  Try Again
-                </button>
-              </div>
-            ) : (
-              <div>
-                <div className="mb-8">
-                  <div className="flex justify-between mb-2">
-                    <span>Question {currentQuestion + 1}/{questions.length}</span>
-                    <span>Score: {score}</span>
-                  </div>
-                  <div className="w-full bg-blue-900/50 rounded-full h-2">
-                    <div
-                      className="bg-blue-400 h-2 rounded-full"
-                      style={{ width: `${((currentQuestion) / questions.length) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-                {currentQuestionData && (
-                  <>
-                    <h3 className="text-xl font-bold mb-6">{currentQuestionData.questionText}</h3>
-                    <div className="grid gap-4">
-                      {currentQuestionData.answerOptions.map((answerOption, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleAnswerClick(answerOption.isCorrect)}
-                          className="text-left bg-blue-700/50 hover:bg-blue-700/80 p-4 rounded-lg transition-colors"
-                        >
-                          {answerOption.answerText}
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Join us */}
-      <section id="join" className="py-20 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">Join Our Digital Citizenship Community</h2>
-          <p className="text-xl mb-10">
-            Work together to create a safer, more inclusive, and more ethical digital world
-          </p>
-          <form className="bg-blue-800/30 p-8 rounded-lg backdrop-blur-sm max-w-xl mx-auto">
-            <div className="mb-4">
-              <input 
-                type="text" 
-                placeholder="Your Name"
-                className="w-full p-3 rounded bg-white/10 border border-blue-400 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              />
-            </div>
+        
+        {!result ? (
+          <div className="max-w-lg mx-auto mt-12 bg-white rounded-lg shadow-md p-6">
             <div className="mb-4">
               <input 
                 type="email" 
-                placeholder="Your Email"
-                className="w-full p-3 rounded bg-white/10 border border-blue-400 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                placeholder="Enter your email address" 
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
+                onKeyPress={(e) => e.key === 'Enter' && checkEmail()}
+              />
+              {error && <p className="text-red-500 text-sm mt-1 text-left">{error}</p>}
+            </div>
+            
+            <button 
+              className={`w-full ${isLoading ? 'bg-blue-400' : 'bg-blue-500 hover:bg-blue-600'} text-white py-3 px-4 rounded-md font-medium transition-colors`}
+              onClick={checkEmail}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Checking...' : 'Check Email Security'}
+            </button>
+            
+            <div className="mt-4 text-left">
+              <p className="text-sm text-gray-600 mb-2">How We Protect Your Privacy? <Link href="/privacy" className="text-blue-500 hover:underline">Learn More</Link></p>
+              
+              <div className="flex items-start gap-2 text-sm text-gray-600 mb-1">
+                <svg className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>We do not store your email address</span>
+              </div>
+              
+              <div className="flex items-start gap-2 text-sm text-gray-600 mb-1">
+                <svg className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>All checks are hashed locally on your device</span>
+              </div>
+              
+              <div className="flex items-start gap-2 text-sm text-gray-600">
+                <svg className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Only encrypted hash values are sent for comparison</span>
+              </div>
+            </div>
+          </div>
+        ) : result === "secure" ? (
+          <div className="max-w-lg mx-auto mt-12 bg-white rounded-lg shadow-md p-6">
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Good News! Your Email Appears Secure</h2>
+              <p className="text-gray-600 mb-6">This email was not found in known data breaches, but stay vigilant!</p>
+              
+              <div className="w-full border-t border-gray-200 pt-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">For your digital safety, we recommend:</h3>
+                
+                <div className="space-y-3">
+                  <div className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700">Regularly change passwords</span>
+                  </div>
+                  
+                  <div className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700">Enable two-factor authentication</span>
+                  </div>
+                  
+                  <div className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700">Use different passwords for different accounts</span>
+                  </div>
+                </div>
+              </div>
+              
+              <button className="mt-6 bg-blue-500 text-white py-3 px-6 rounded-md font-medium hover:bg-blue-600 transition-colors">
+                Learn How to Further Protect Your Digital Identity
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="max-w-lg mx-auto mt-12">
+            <div className="bg-red-50 rounded-lg shadow-md p-6 mb-6">
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Warning! This Email May Be at Risk</h2>
+                <p className="text-gray-700 mb-6">This email was found in known data breaches, please take immediate action!</p>
+                
+                <button className="bg-red-500 text-white py-3 px-6 rounded-md font-medium hover:bg-red-600 transition-colors">
+                  View Detailed Recovery Steps
+                </button>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Recommended Actions</h3>
+              
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white font-medium text-sm">
+                    1
+                  </div>
+                  <span className="text-gray-700">Immediately change passwords for all accounts using this email</span>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white font-medium text-sm">
+                    2
+                  </div>
+                  <span className="text-gray-700">Enable two-factor authentication for important accounts</span>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white font-medium text-sm">
+                    3
+                  </div>
+                  <span className="text-gray-700">Check your accounts for suspicious activity</span>
+                </div>
+              </div>
+            </div>
+            
+            {breaches.length > 0 && (
+              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Breach Details</h3>
+                
+                <div className="space-y-6">
+                  {breaches.map((breach, index) => (
+                    <div key={index} className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="text-lg font-medium text-gray-800">{breach.title || breach.name}</h4>
+                        <span className="text-sm text-gray-500">{formatDate(breach.breachDate)}</span>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">{breach.description}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {breach.dataClasses.map((dataClass, i) => (
+                          <span key={i} className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
+                            {dataClass}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Learn More About Risks</h3>
+              
+              <p className="text-gray-700 mb-4">Your information may be used for:</p>
+              
+              <div className="space-y-3 mb-6">
+                <div className="flex items-start gap-2">
+                  <svg className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  <span className="text-gray-700">Identity theft</span>
+                </div>
+                
+                <div className="flex items-start gap-2">
+                  <svg className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <span className="text-gray-700">Phishing attacks</span>
+                </div>
+                
+                <div className="flex items-start gap-2">
+                  <svg className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-gray-700">Spam and unwanted communications</span>
+                </div>
+              </div>
+              
+              <Link href="/digital-security-risks" className="text-red-500 hover:text-red-600 flex items-center gap-1 font-medium">
+                Learn More About Digital Security Risks
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {result && (
+          <div className="flex gap-6 justify-center mt-8">
+            <button 
+              onClick={() => {
+                setResult(null);
+                setEmail("");
+                setBreaches([]);
+              }}
+              className="bg-blue-500 text-white py-2 px-6 rounded-md font-medium hover:bg-blue-600 transition-colors"
+            >
+              Check Another Email
+            </button>
+            <Link 
+              href="/digital-security-guides"
+              className="bg-gray-700 text-white py-2 px-6 rounded-md font-medium hover:bg-gray-800 transition-colors"
+            >
+              Digital Security Guides
+            </Link>
+          </div>
+        )}
+      </section>
+
+      {/* Security Stats Section */}
+      <section className="py-12 px-4">
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-10">Malaysian Digital Security Snapshot</h2>
+        
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-[#f5faff] p-6 rounded-lg shadow-sm text-center">
+            <div className="flex justify-center mb-3">
+              <svg className="w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <h3 className="text-gray-700 font-medium mb-2">Data Breach Growth Rate</h3>
+            <p className="text-3xl font-bold text-blue-600">28%/Year</p>
+          </div>
+          
+          <div className="bg-[#f5faff] p-6 rounded-lg shadow-sm text-center">
+            <div className="flex justify-center mb-3">
+              <svg className="w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <h3 className="text-gray-700 font-medium mb-2">Identity Theft Cases Growth</h3>
+            <p className="text-3xl font-bold text-blue-600">35%/Year</p>
+          </div>
+          
+          <div className="bg-[#f5faff] p-6 rounded-lg shadow-sm text-center">
+            <div className="flex justify-center mb-3">
+              <svg className="w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+              </svg>
+            </div>
+            <h3 className="text-gray-700 font-medium mb-2">Weak Password Usage Rate</h3>
+            <p className="text-3xl font-bold text-blue-600">73%</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Digital Citizenship Matters */}
+      <section className="py-12 px-4 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Why Digital Citizenship Matters?</h2>
+          
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-red-100 flex items-center justify-center">
+                <svg className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <p className="text-gray-700">Over 42,000 cybersecurity incidents reported in Malaysia in 2022</p>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
+                <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-gray-700">CyberSecurity Malaysia reports over 65% of personal data breaches involve weak passwords</p>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
+                <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+              <p className="text-gray-700">MCMC data shows 73% of Malaysian users use the same password across multiple accounts</p>
+            </div>
+          </div>
+          
+          <div className="mt-8 text-center">
+            <button className="bg-blue-600 text-white py-3 px-6 rounded-md font-medium hover:bg-blue-700 transition-colors">
+              Learn More About Digital Security Risks
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Digital Citizenship Quiz Section */}
+      <section className="py-16 px-4 bg-[#f5faff]">
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">Digital Citizenship Quiz</h2>
+        <p className="text-center text-gray-600 max-w-3xl mx-auto mb-10">
+          Test your digital security knowledge and improve your awareness! Take our interactive quiz to see how well you understand digital citizenship principles.
+        </p>
+        <div className="max-w-4xl mx-auto">
+          <DigitalCitizenshipQuiz />
+        </div>
+      </section>
+
+      {/* Quick Guide Section */}
+      <section className="py-16 px-4">
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-12">Quick Guide to Digital Citizenship</h2>
+        
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="h-48 bg-[#eef9ff] flex items-center justify-center p-4">
+              <Image 
+                src="/password-security.png" 
+                alt="Password Security" 
+                width={200} 
+                height={150}
+                className="h-full w-auto object-contain"
               />
             </div>
-            <div className="mb-6">
-              <select 
-                defaultValue="" 
-                className="w-full p-3 rounded bg-white/10 border border-blue-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
-              >
-                <option value="" disabled className="text-gray-400">How did you hear about us?</option>
-                <option value="Social Media">Social Media</option>
-                <option value="Friend Recommendation">Friend Recommendation</option>
-                <option value="Search Engine">Search Engine</option>
-                <option value="Educational Institution">Educational Institution</option>
-                <option value="Other">Other</option>
-              </select>
+            <div className="p-6">
+              <h3 className="text-xl font-semibold mb-2 text-gray-800">Password Security</h3>
+              <p className="text-gray-600 text-sm">Learn how to create and manage strong passwords to protect your accounts</p>
             </div>
-            <button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded transition-colors">
-              Subscribe to Our Newsletter
-            </button>
-          </form>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="h-48 bg-[#eef9ff] flex items-center justify-center p-4">
+              <Image 
+                src="/two-factor.png" 
+                alt="Two-Factor Authentication" 
+                width={200} 
+                height={150}
+                className="h-full w-auto object-contain"
+              />
+            </div>
+            <div className="p-6">
+              <h3 className="text-xl font-semibold mb-2 text-gray-800">Two-Factor Authentication</h3>
+              <p className="text-gray-600 text-sm">Add an extra layer of security to your online accounts</p>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="h-48 bg-[#eef9ff] flex items-center justify-center p-4">
+              <Image 
+                src="/phishing-defense.png" 
+                alt="Phishing Defense" 
+                width={200} 
+                height={150}
+                className="h-full w-auto object-contain"
+              />
+            </div>
+            <div className="p-6">
+              <h3 className="text-xl font-semibold mb-2 text-gray-800">Phishing Defense</h3>
+              <p className="text-gray-600 text-sm">Recognize and avoid common phishing attempts</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="mt-12 text-center">
+          <button className="bg-blue-600 text-white py-3 px-8 rounded-md font-medium hover:bg-blue-700 transition-colors">
+            Explore Full Digital Citizenship Education
+          </button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-blue-900 text-white/80 py-10 px-6">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8">
-          <div>
-            <h3 className="text-xl font-bold mb-4">Digital Citizenship</h3>
-            <p>Dedicated to fostering responsible, ethical, and empathetic digital citizens</p>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              <li><Link href="#" className="hover:text-white">Home</Link></li>
-              <li><Link href="#about" className="hover:text-white">About Us</Link></li>
-              <li><Link href="#resources" className="hover:text-white">Resources</Link></li>
-              <li><Link href="#join" className="hover:text-white">Join Us</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Contact</h4>
-            <ul className="space-y-2">
-              <li>info@digitalcitizenship.org</li>
-              <li>+1 (123) 456-7890</li>
-              <li>Melbourne, Australia</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Follow Us</h4>
-            <div className="flex space-x-4">
-              <a href="#" className="hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/>
-                </svg>
-              </a>
-              <a href="#" className="hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
-                </svg>
-              </a>
-              <a href="#" className="hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2zm-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6zm9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
-                </svg>
-              </a>
-              <a href="#" className="hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-                </svg>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div className="mt-8 pt-8 border-t border-blue-800 text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} Digital Citizenship Initiative. All rights reserved.</p>
+      <footer className="py-6 px-4 bg-white border-t border-gray-200 mt-auto">
+        <div className="max-w-5xl mx-auto text-center text-gray-500 text-sm">
+          <p>© 2024 Digital Citizenship Guardian. All rights reserved.</p>
         </div>
       </footer>
     </main>

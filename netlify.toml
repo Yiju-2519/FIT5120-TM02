@@ -1,6 +1,23 @@
 [build]
-  command = "npm run build"
+  command = "npm install && npm run build"
   publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "18.17.0"
+  NEXT_TELEMETRY_DISABLED = "1"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Ensure all API and tRPC are correct
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+# This configuration is used to request direct processing to the server component
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false

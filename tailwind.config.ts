@@ -6,7 +6,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-geist-sans)", ...fontFamily.sans],
+        sans: ["var(--font-roboto)", ...fontFamily.sans],
+        heading: ["var(--font-poppins)", ...fontFamily.sans],
+        proxima: ["Proxima Nova", "var(--font-roboto)", ...fontFamily.sans],
       },
     },
   },

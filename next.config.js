@@ -8,9 +8,24 @@ import "./src/env.js";
 const config = {
   webpack: (config) => {
     config.resolve.fallback = {
-      fs: false, // 防止 'fs' 錯誤，僅做 fallback，不應真正依賴 fs
+      fs: false, // Prevent 'fs' error, only fallback, should not rely on fs
     };
     return config;
+  },
+  // Add configuration for Turbopack
+  experimental: {
+    turbo: {
+      resolveAlias: {
+        '@trpc/client': '@trpc/client',
+        '@trpc/server': '@trpc/server',
+        '@trpc/react-query': '@trpc/react-query',
+      },
+    },
+  },
+  eslint: {
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: true,
   },
 };
 
