@@ -1,145 +1,175 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { useSearchParams } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import NavBar from '../../components/NavBar';
+import Footer from '../../components/Footer';
+import { FaCheckCircle, FaShieldAlt, FaQuestionCircle, FaExclamationTriangle } from 'react-icons/fa';
+
+type EmailCheckData = {
+  email: string;
+  status: string;
+  breachCount?: number;
+  affectedSites?: string;
+  breaches?: any[];
+};
 
 export default function SecureResultPage() {
-  const searchParams = useSearchParams();
-  const email = searchParams.get('email') || '';
+  const router = useRouter();
+  const [emailData, setEmailData] = useState<EmailCheckData | null>(null);
+  
+  useEffect(() => {
+    // Read data from sessionStorage
+    const storedData = sessionStorage.getItem('emailCheck');
+    
+    if (!storedData) {
+      // If no data, redirect to homepage
+      router.push('/');
+      return;
+    }
+    
+    try {
+      const parsedData = JSON.parse(storedData) as EmailCheckData;
+      
+      // Confirm this is secure data
+      if (parsedData.status !== 'secure') {
+        router.push('/result/at-risk');
+        return;
+      }
+      
+      setEmailData(parsedData);
+    } catch (error) {
+      console.error('Error parsing stored data:', error);
+      router.push('/');
+    }
+  }, [router]);
+  
+  // Add email masking function
+  const maskEmail = (email: string) => {
+    const parts = email.split('@');
+    if (parts.length !== 2) return email;
+    
+    const [username, domain] = parts;
+    // Ensure username exists and has enough length
+    if (!username || username.length < 3) return email;
+    
+    const maskedUsername = username.charAt(0) + '*'.repeat(username.length - 2) + username.charAt(username.length - 1);
+    return `${maskedUsername}@${domain}`;
+  };
+  
+  if (!emailData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <NavBar />
+        <div className="flex-grow flex items-center justify-center">
+          <div className="animate-pulse text-gray-500">Loading...</div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
   
   return (
-    <main className="min-h-screen flex flex-col bg-[#eef6ff]">
-      {/* Navigation bar */}
-      <nav className="sticky top-0 z-50 bg-white shadow-sm">
-        <div className="max-w-[1400px] mx-auto px-12 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12">
-              <Image 
-                src="/caknak-logo.png" 
-                alt="caKnak" 
-                width={48} 
-                height={48}
-                className="w-full h-auto"
-                priority={true}
-                unoptimized={true}
-              />
-            </div>
-            <Link href="/" className="text-xl font-medium text-gray-700">caKnak</Link>
-          </div>
-          <div className="flex gap-10">
-            <Link href="/data-breach" className="text-gray-600 hover:text-blue-600 text-sm font-medium">Data Breach</Link>
-            <Link href="/recovery-steps" className="text-gray-600 hover:text-blue-600 text-sm font-medium">Recovery Steps</Link>
-            <Link href="/education-center" className="text-gray-600 hover:text-blue-600 text-sm font-medium">Education Center</Link>
-            <Link href="/knowledge-quiz" className="text-gray-600 hover:text-blue-600 text-sm font-medium">Knowledge Quiz</Link>
-            <Link href="/faq" className="text-gray-600 hover:text-blue-600 text-sm font-medium">FAQ</Link>
-          </div>
-        </div>
-      </nav>
-
-      <section className="py-16 px-4 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800 max-w-4xl mx-auto">
-          Email Security Assessment
-        </h1>
-        
-        <div className="max-w-lg mx-auto mt-12 bg-white rounded-lg shadow-md p-8">
-          <div className="flex flex-col items-center">
-            <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-6">
-              <svg className="w-10 h-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Good News! Your Email Appears Secure</h2>
-            {email && (
-              <p className="text-gray-600 mb-2 font-medium">{email}</p>
-            )}
-            <p className="text-gray-600 mb-6">This email was not found in any known data breaches, but staying vigilant is still important!</p>
-            
-            <div className="w-full border-t border-gray-200 pt-6 mt-2">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">For your continued digital safety, we recommend:</h3>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <NavBar />
+      
+      <main className="flex-grow">
+        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+          {/* Email Security Assessment Card */}
+          <div className="mb-10 bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <span className="mr-2">Email Security Assessment</span>
+              </h2>
               
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
-                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <span className="text-gray-700">Regularly change passwords (every 3-6 months)</span>
+              <div className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg mb-6">
+                <div className="text-green-500 mb-4">
+                  <FaCheckCircle size={80} />
                 </div>
                 
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
-                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                    </svg>
+                <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">Good News! Your Email Appears Secure</h1>
+                
+                <p className="text-gray-600 mb-2 font-medium text-center">
+                  {maskEmail(emailData.email)}
+                </p>
+                
+                <p className="text-gray-600 mb-6 text-center">
+                  We didn't find any records of your email address in known data breaches.
+                </p>
+                
+                <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-6 w-full">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <FaShieldAlt className="h-5 w-5 text-green-400" />
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-green-800">Safety Recommendations</h3>
+                      <div className="mt-2 text-sm text-green-700">
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Continue to use strong, unique passwords for all your accounts</li>
+                          <li>Enable two-factor authentication where available</li>
+                          <li>Regularly monitor your accounts for suspicious activity</li>
+                          <li>Be cautious when sharing personal information online</li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
-                  <span className="text-gray-700">Enable two-factor authentication for all important accounts</span>
                 </div>
                 
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
-                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <span className="text-gray-700">Use a different password for each of your accounts</span>
-                </div>
-                
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
-                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <span className="text-gray-700">Consider using a reputable password manager</span>
-                </div>
+                <Link 
+                  href="/"
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                >
+                  Check Another Email
+                </Link>
+              </div>
+            </div>
+          </div>
+          
+          {/* Digital Citizenship Quiz Section */}
+          <div className="grid md:grid-cols-2 gap-8 mb-10">
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="p-6">
+                <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                  <FaQuestionCircle className="mr-2 text-teal-500" />
+                  <span>Digital Citizenship Quiz</span>
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  Test your knowledge about online safety and digital citizenship with our interactive quiz.
+                </p>
+                <Link
+                  href="/citizenship-quiz"
+                  className="inline-flex items-center px-4 py-2 border border-teal-600 text-base font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                >
+                  Take the Quiz
+                </Link>
+              </div>
+            </div>
+            
+            {/* Common Security Risks Section */}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="p-6">
+                <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                  <FaExclamationTriangle className="mr-2 text-amber-500" />
+                  <span>Common Security Risks</span>
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  Learn about common online security risks and how to protect yourself from them.
+                </p>
+                <Link
+                  href="/common-risks"
+                  className="inline-flex items-center px-4 py-2 border border-teal-600 text-base font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                >
+                  View Common Risks
+                </Link>
               </div>
             </div>
           </div>
         </div>
-        
-        <div className="bg-white rounded-lg shadow-md p-6 max-w-lg mx-auto mt-8">
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">Stay Protected Online</h3>
-          <p className="text-gray-600 mb-4">
-            Even though your email hasn't been found in known breaches, it's important to maintain good security practices:
-          </p>
-          
-          <div className="space-y-3 text-left">
-            <div className="bg-blue-50 p-3 rounded-md">
-              <h4 className="font-medium text-blue-800">Be aware of phishing attempts</h4>
-              <p className="text-sm text-gray-600">Don't click on suspicious links or provide personal information to unverified sources.</p>
-            </div>
-            
-            <div className="bg-blue-50 p-3 rounded-md">
-              <h4 className="font-medium text-blue-800">Keep your software updated</h4>
-              <p className="text-sm text-gray-600">Regular updates include important security patches that protect your devices.</p>
-            </div>
-            
-            <div className="bg-blue-50 p-3 rounded-md">
-              <h4 className="font-medium text-blue-800">Check your accounts periodically</h4>
-              <p className="text-sm text-gray-600">Regularly review your account activity for any unauthorized access or suspicious behavior.</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex gap-6 justify-center mt-8">
-          <Link href="/" className="bg-blue-500 text-white py-2 px-6 rounded-md font-medium hover:bg-blue-600 transition-colors">
-            Check Another Email
-          </Link>
-          <Link href="/digital-security-guides" className="bg-gray-700 text-white py-2 px-6 rounded-md font-medium hover:bg-gray-800 transition-colors">
-            Digital Security Guides
-          </Link>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-6 px-4 bg-white border-t border-gray-200 mt-auto">
-        <div className="max-w-5xl mx-auto text-center text-gray-500 text-sm">
-          <p>© 2024 Digital Citizenship Guardian. All rights reserved.</p>
-        </div>
-      </footer>
-    </main>
+      </main>
+      
+      <Footer />
+    </div>
   );
 } 

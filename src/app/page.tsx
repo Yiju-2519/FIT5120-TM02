@@ -4,6 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
+import NavBar from "./components/NavBar";
+import Footer from "./components/Footer";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -53,38 +55,30 @@ export default function Home() {
       
       const data = await response.json();
       
-      // Redirect to appropriate result page
+      // 使用 sessionStorage 存儲數據，而不是通過 URL 參數傳遞
+      sessionStorage.setItem('emailCheck', JSON.stringify({
+        email: email,
+        status: data.status,
+        breachCount: data.breachCount || 0,
+        affectedSites: data.affectedSites || '',
+        breaches: data.breaches && Array.isArray(data.breaches) 
+          ? data.breaches.slice(0, 5).map((breach: any) => ({
+              name: breach.name,
+              title: breach.title,
+              domain: breach.domain,
+              breachDate: breach.breachDate,
+              description: breach.description?.substring(0, 150) + (breach.description?.length > 150 ? '...' : ''),
+              dataClasses: breach.dataClasses?.slice(0, 5),
+              pwnCount: breach.pwnCount
+            }))
+          : []
+      }));
+      
+      // Redirect to appropriate result page without query parameters
       if (data.status === 'at-risk') {
-        // Construct URL for at-risk page with breach data
-        let redirectUrl = `/result/at-risk?email=${encodeURIComponent(email)}`;
-        
-        if (data.breachCount) {
-          redirectUrl += `&breachCount=${data.breachCount}`;
-        }
-        
-        if (data.affectedSites) {
-          redirectUrl += `&affectedSites=${encodeURIComponent(data.affectedSites)}`;
-        }
-        
-        if (data.breaches && Array.isArray(data.breaches)) {
-          // Limit breach data to avoid URL length issues
-          const limitedBreaches = data.breaches.slice(0, 5).map((breach: any) => ({
-            name: breach.name,
-            title: breach.title,
-            domain: breach.domain,
-            breachDate: breach.breachDate,
-            description: breach.description?.substring(0, 150) + (breach.description?.length > 150 ? '...' : ''),
-            dataClasses: breach.dataClasses?.slice(0, 5),
-            pwnCount: breach.pwnCount
-          }));
-          
-          redirectUrl += `&breaches=${encodeURIComponent(JSON.stringify(limitedBreaches))}`;
-        }
-        
-        window.location.href = redirectUrl;
+        window.location.href = '/result/at-risk';
       } else {
-        // Redirect to secure page
-        window.location.href = `/result/secure?email=${encodeURIComponent(email)}`;
+        window.location.href = '/result/secure';
       }
     } catch (err) {
       console.error("Error checking email:", err);
@@ -106,31 +100,7 @@ export default function Home() {
   return (
     <main className="min-h-screen flex flex-col bg-[#eef6ff]">
       {/* Navigation bar */}
-      <nav className="sticky top-0 z-50 bg-white shadow-sm">
-        <div className="max-w-[1400px] mx-auto px-12 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12">
-              <Image 
-                src="/caknak-logo.png" 
-                alt="caKnak" 
-                width={48} 
-                height={48}
-                className="w-full h-auto"
-                priority={true}
-                unoptimized={true}
-              />
-            </div>
-            <span className="text-xl font-medium text-gray-700">caKnak</span>
-          </div>
-          <div className="flex gap-10">
-            <Link href="/data-breach" className="text-gray-600 hover:text-blue-600 text-sm font-medium">Data Breach</Link>
-            <Link href="/recovery-steps" className="text-gray-600 hover:text-blue-600 text-sm font-medium">Recovery Steps</Link>
-            <Link href="/education-center" className="text-gray-600 hover:text-blue-600 text-sm font-medium">Education Center</Link>
-            <Link href="/knowledge-quiz" className="text-gray-600 hover:text-blue-600 text-sm font-medium">Knowledge Quiz</Link>
-            <Link href="/faq" className="text-gray-600 hover:text-blue-600 text-sm font-medium">FAQ</Link>
-          </div>
-        </div>
-      </nav>
+      <NavBar />
 
       {/* Email Security Section */}
       <section id="emailSecurity" className="py-20 px-4">
@@ -350,11 +320,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-6 px-4 bg-[#f5f5f5] border-t border-gray-200 mt-auto">
-        <div className="max-w-5xl mx-auto text-center text-gray-500 text-sm">
-          <p>© 2024 Digital Citizenship Guardian. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${roboto.variable} ${poppins.variable}`}>
       <body>
-        <NextTopLoader color="black" showSpinner={false} />
+        <NextTopLoader color="blue" showSpinner={false} />
         <TRPCReactProvider>
           {children}
         </TRPCReactProvider>
