@@ -37,30 +37,6 @@ export default function DigitalSecurityRisksPage() {
                 <p className="text-gray-700 mb-4">
                   Your email is only used for the purpose of breach detection and is deleted immediately after processing.
                 </p>
-                
-                <h3 className="text-lg font-bold text-gray-800 mb-3">Your information may be used for:</h3>
-                <div className="mt-4 space-y-4">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 text-red-500 mr-3">
-                      <FaUserShield size={20} />
-                    </div>
-                    <span className="text-gray-700">Identity theft</span>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 text-red-500 mr-3">
-                      <MdPhishing size={20} />
-                    </div>
-                    <span className="text-gray-700">Phishing attacks</span>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 text-red-500 mr-3">
-                      <AiOutlineMail size={20} />
-                    </div>
-                    <span className="text-gray-700">Spam and unwanted communications</span>
-                  </div>
-                </div>
               </section>
             </div>
             

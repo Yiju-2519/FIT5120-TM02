@@ -22,22 +22,15 @@
     [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# Handle API routes
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
-  status = 200
-  force = true
-
 # Add proper next-image handling
 [[redirects]]
   from = "/_next/image*"
   to = "/_next/image:splat"
   status = 200
 
-# This configuration is used for standard page routing
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  force = false
+# This redirect should be removed as it interferes with Next.js's routing
+# [[redirects]]
+#  from = "/*"
+#  to = "/index.html"
+#  status = 200
+#  force = false

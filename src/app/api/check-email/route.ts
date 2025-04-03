@@ -3,6 +3,16 @@ import { NextResponse } from 'next/server';
 // Get API key from environment variables or use the hardcoded one as fallback
 const HIBP_API_KEY = process.env.HIBP_API_KEY || '9b943109e49542d59147c95d9d73a945';
 
+// Enhanced logging to debug issues in Netlify environment
+const logEnvironmentInfo = () => {
+  console.log("Environment Debug Info:");
+  console.log("- NODE_ENV:", process.env.NODE_ENV);
+  console.log("- Is on Netlify:", !!process.env.NETLIFY);
+  console.log("- HIBP_API_KEY present:", !!HIBP_API_KEY);
+  console.log("- HIBP_API_KEY length:", HIBP_API_KEY ? HIBP_API_KEY.length : 0);
+  console.log("- NEXT_PUBLIC_DEPLOYED_ENV:", process.env.NEXT_PUBLIC_DEPLOYED_ENV);
+}
+
 // Helper function to log errors in Netlify environment
 const logError = (message: string, error: any) => {
   console.error(`[EMAIL-CHECK-API] ${message}:`, error);
@@ -17,6 +27,7 @@ const logError = (message: string, error: any) => {
 export async function POST(request: Request) {
   try {
     console.log("[EMAIL-CHECK-API] Request received");
+    logEnvironmentInfo();
     
     // Check if we're running on Netlify for debugging
     const isNetlify = !!process.env.NETLIFY;

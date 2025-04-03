@@ -3,6 +3,12 @@
  * for Docker builds.
  */
 import "./src/env.js";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// ES Module compatible way to get dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -38,6 +44,11 @@ const config = {
     domains: ['netlify.app', 'localhost'],
     unoptimized: true,
   },
+  // Ensure API routes work properly
+  serverRuntimeConfig: {
+    PROJECT_ROOT: __dirname
+  },
+  poweredByHeader: false,
 };
 
 export default config;
