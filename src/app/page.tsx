@@ -76,9 +76,9 @@ export default function Home() {
       
       // Redirect to appropriate result page without query parameters
       if (data.status === 'at-risk') {
-        window.location.href = '/result/at-risk';
+        router.push('/result/at-risk');
       } else {
-        window.location.href = '/result/secure';
+        router.push('/result/secure');
       }
     } catch (err) {
       console.error("Error checking email:", err);
@@ -122,10 +122,13 @@ export default function Home() {
                   disabled={isLoading}
                 />
               </div>
-              <button
-                onClick={checkEmail}
-                disabled={isLoading}
-                className="w-full md:w-auto whitespace-nowrap px-8 py-3 bg-blue-500 text-white rounded-md font-medium hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 disabled:opacity-70 transition-colors"
+              <Link
+                href="/email-check"
+                onClick={(e) => {
+                  e.preventDefault();
+                  checkEmail();
+                }}
+                className={`w-full md:w-auto whitespace-nowrap px-8 py-3 bg-blue-500 text-white rounded-md font-medium hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 transition-colors ${isLoading ? 'opacity-70 pointer-events-none' : ''}`}
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center">
@@ -138,7 +141,7 @@ export default function Home() {
                 ) : (
                   "Check Email Security"
                 )}
-              </button>
+              </Link>
             </div>
             
             {error && (
@@ -217,7 +220,7 @@ export default function Home() {
       </section>
 
       {/* Why Digital Citizenship Matters */}
-      <section className="py-12 px-4 bg-[#f9f9f9]">
+      <section className="py-12 px-4 bg-[#efefef]">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Why Digital Citizenship Matters?</h2>
           
@@ -251,9 +254,11 @@ export default function Home() {
           </div>
           
           <div className="mt-8 text-center">
-            <button className="bg-blue-600 text-white py-3 px-6 rounded-md font-medium hover:bg-blue-700 transition-colors">
+            <Link 
+              href="/digital-security-risks"
+              className="bg-blue-600 text-white py-3 px-6 rounded-md font-medium hover:bg-blue-700 transition-colors">
               Learn More About Digital Security Risks
-            </button>
+            </Link>
           </div>
         </div>
       </section>

@@ -75,27 +75,27 @@ export default function SecureResultPage() {
       <NavBar />
       
       <main className="flex-grow pt-16">
-        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           {/* Email Security Assessment Card */}
           <div className="mb-10 bg-white rounded-lg shadow-md overflow-hidden">
             <div className="p-6">
               
-              <div className="flex flex-col items-center justify-center p-12 bg-gray-50 rounded-lg mb-6">
+              <div className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg mb-4">
                 <div className="text-blue-500 mb-4">
                   <FaCheckCircle size={80}/>
                 </div>
                 
                 <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">Good News! Your Email Appears Secure</h1>
                 
-                <p className="text-gray-600 mb-2 font-medium text-center">
+                <p className="text-gray-600 mb-4 text-center">
                   {maskEmail(emailData.email)}
                 </p>
                 
-                <p className="text-gray-600 mb-6 text-center">
+                <p className="text-gray-600 mb-4 text-center">
                   We didn't find any records of your email address in known data breaches.
                 </p>
                 
-                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 w-full">
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4 w-full">
                   <div className="flex">
                     <div className="flex-shrink-0">
                       <FaShieldAlt className="h-5 w-5 text-blue-400" />
@@ -115,17 +115,17 @@ export default function SecureResultPage() {
                 </div>
                 
                 <Link 
-                  href="/"
+                  href="/digital-security-risks"
                   className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  Check Another Email
+                  Learn How to Further Protect Your Digital Identity
                 </Link>
               </div>
             </div>
           </div>
           
           {/* Digital Citizenship Quiz Section */}
-          <div className="grid md:grid-cols-2 gap-8 mb-10">
+          <div className="grid md:grid-cols-2 gap-8 mb-4">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-6">
                 <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
@@ -165,6 +165,21 @@ export default function SecureResultPage() {
           </div>
         </div>
       </main>
+      
+      <div className="flex justify-center space-x-8 pb-6">
+        <Link 
+          href="/"
+          className="w-56 inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Check Another Email
+        </Link>
+        <Link
+          href="/digital-security-risks"
+          className="w-56 inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-black bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+        >
+          Digital Security Guides
+        </Link>
+      </div>
       
       <Footer />
     </div>

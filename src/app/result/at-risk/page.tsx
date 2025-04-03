@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import NavBar from '../../components/NavBar';
 import Footer from '../../components/Footer';
-import { FaExclamationTriangle, FaLock, FaShieldAlt, FaQuestionCircle, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaExclamationTriangle, FaLock, FaShieldAlt, FaQuestionCircle, FaChevronDown, FaChevronUp, FaUserShield } from 'react-icons/fa';
+import { MdPhishing } from 'react-icons/md';
+import { AiOutlineMail } from 'react-icons/ai';
 
 type Breach = {
   name: string;
@@ -104,55 +106,65 @@ export default function AtRiskResultPage() {
       <NavBar />
       
       <main className="flex-grow pt-16">
-        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           {/* Email Risk Assessment Card */}
           <div className="mb-10 bg-white rounded-lg shadow-md overflow-hidden">
             <div className="p-6">
               
-              <div className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg mb-6">
+              <div className="flex flex-col items-center justify-center p-6 bg-red-50 rounded-lg mb-6">
                 <div className="text-red-400 mb-4">
                   <FaExclamationTriangle size={80} color='#fe4859'/>
                 </div>
                 
-                <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">Warning: Your Email Has Been Compromised</h1>
+                <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">Warning! This Email May Be at Risk</h1>
                 
                 <p className="text-gray-600 mb-2 font-medium text-center">
                   {maskEmail(emailData.email)}
                 </p>
                 
                 <p className="text-gray-700 mb-4 text-center">
-                  We found your email in <span className="font-bold text-red-600">{emailData.breachCount} data {emailData.breachCount === 1 ? 'breach' : 'breaches'}</span>.
-                  {emailData.affectedSites && (
-                    <span> Sites affected include: <span className="font-semibold">{emailData.affectedSites}</span>.</span>
-                  )}
+                  This email was found in known data breaches, please take immediate action!
                 </p>
                 
-                <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 w-full">
-                  <div className="flex">
-                    <div className="flex-shrink-0">
-                      <FaLock className="h-5 w-5 text-red-400" />
+                <Link 
+                  href="/recovery-steps"
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  View Detailed Recovery Steps
+                </Link>
+              </div>
+              
+              {/* Recommended Actions */}
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-gray-800 mb-4">Recommended Actions</h3>
+                <div className="space-y-4">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0 h-6 w-6 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                      <span className="text-red-500 font-medium">1</span>
                     </div>
-                    <div className="ml-3">
-                      <h3 className="text-sm font-medium text-red-800">Immediate Actions Required</h3>
-                      <div className="mt-2 text-sm text-red-700">
-                        <ul className="list-disc pl-5 space-y-1">
-                          <li>Change your password immediately on all affected sites</li>
-                          <li>Use a unique, strong password for each account</li>
-                          <li>Enable two-factor authentication wherever possible</li>
-                          <li>Monitor your accounts for suspicious activity</li>
-                          <li>Be cautious of phishing attempts targeting this email</li>
-                        </ul>
-                      </div>
+                    <div>
+                      <p className="text-gray-700">Immediately change passwords for all accounts using this email</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0 h-6 w-6 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                      <span className="text-red-500 font-medium">2</span>
+                    </div>
+                    <div>
+                      <p className="text-gray-700">Enable two-factor authentication for important accounts</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0 h-6 w-6 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                      <span className="text-red-500 font-medium">3</span>
+                    </div>
+                    <div>
+                      <p className="text-gray-700">Check your accounts for suspicious activity</p>
                     </div>
                   </div>
                 </div>
-                
-                <Link 
-                  href="/"
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                >
-                  Check Another Email
-                </Link>
               </div>
               
               {/* Breaches Details */}
@@ -218,21 +230,41 @@ export default function AtRiskResultPage() {
           </div>
           
           {/* Recovery Steps and Educational Resources */}
-          <div className="grid md:grid-cols-2 gap-8 mb-10">
+          <div className="grid md:grid-cols-2 gap-8 mb-4">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-6">
                 <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                  <FaShieldAlt className="mr-2 text-teal-500" />
-                  <span>Recovery Steps</span>
+                  <FaExclamationTriangle className="mr-2 text-red-500" />
+                  <span>Learn More About Risks</span>
                 </h2>
                 <p className="text-gray-600 mb-4">
-                  Follow our comprehensive guide to recover from a data breach and secure your online accounts.
+                  Your information may be used for:
                 </p>
+                <ul className="space-y-2 mb-4">
+                  <li className="flex items-center text-gray-600">
+                    <div className="flex-shrink-0 text-red-500 mr-2">
+                      <FaUserShield size={18} />
+                    </div>
+                    Identity theft
+                  </li>
+                  <li className="flex items-center text-gray-600">
+                    <div className="flex-shrink-0 text-red-500 mr-2">
+                      <MdPhishing size={18} />
+                    </div>
+                    Phishing attacks
+                  </li>
+                  <li className="flex items-center text-gray-600">
+                    <div className="flex-shrink-0 text-red-500 mr-2">
+                      <AiOutlineMail size={18} />
+                    </div>
+                    Spam and unwanted communications
+                  </li>
+                </ul>
                 <Link
-                  href="/recovery-steps"
-                  className="inline-flex items-center px-4 py-2 border border-teal-600 text-base font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                  href="/digital-security-risks"
+                  className="inline-flex items-center px-4 py-2 border border-red-500 text-base font-medium rounded-md text-red-500 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 >
-                  View Recovery Guide
+                  Learn More About Digital Security Risks <span className="ml-1">→</span>
                 </Link>
               </div>
             </div>
@@ -240,23 +272,49 @@ export default function AtRiskResultPage() {
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-6">
                 <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                  <FaQuestionCircle className="mr-2 text-amber-500" />
-                  <span>Digital Citizenship Quiz</span>
+                  <FaShieldAlt className="mr-2 text-blue-500" />
+                  <span>Protect Your Other Accounts</span>
                 </h2>
-                <p className="text-gray-600 mb-4">
-                  Test your knowledge about online safety and improve your digital citizenship skills.
-                </p>
+                <ul className="space-y-2 mb-4">
+                  <li className="flex items-center text-gray-600">
+                    <span className="text-blue-500 mr-2">✓</span>
+                    Review and update passwords for all your accounts
+                  </li>
+                  <li className="flex items-center text-gray-600">
+                    <span className="text-blue-500 mr-2">✓</span>
+                    Use a password manager to generate and store strong passwords
+                  </li>
+                  <li className="flex items-center text-gray-600">
+                    <span className="text-blue-500 mr-2">✓</span>
+                    Set up regular security checkups for your accounts
+                  </li>
+                </ul>
                 <Link
-                  href="/citizenship-quiz"
-                  className="inline-flex items-center px-4 py-2 border border-teal-600 text-base font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                  href="/password-manager-guide"
+                  className="inline-flex items-center px-4 py-2 border border-blue-500 text-base font-medium rounded-md text-blue-500 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  Take the Quiz
+                  View Password Manager Guide <span className="ml-1">→</span>
                 </Link>
               </div>
             </div>
           </div>
         </div>
       </main>
+      
+      <div className="flex justify-center space-x-8 pb-6">
+        <Link
+          href="/"
+          className="w-56 inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+        >
+          Check Another Email
+        </Link>
+        <Link
+          href="/digital-security-risks"
+          className="w-56 inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-black bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+        >
+          Digital Security Guides
+        </Link>
+      </div>
       
       <Footer />
     </div>
