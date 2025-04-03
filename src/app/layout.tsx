@@ -4,7 +4,9 @@ import { Roboto, Poppins } from "next/font/google";
 import { type Metadata } from "next";
 import React from "react";
 
+import NextTopLoader from "nextjs-toploader";
 import { TRPCReactProvider } from "~/trpc/react";
+import { Toaster } from "react-hot-toast";
 
 // Configure Roboto font
 const roboto = Roboto({
@@ -21,9 +23,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "CaKnak - Digital Safety For All",
+  title: "caKnak",
   description: "Your trusted resource for digital safety, security, and citizenship education.",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  icons: [{ rel: "icon", url: "/caknak-logo.png" }],
 };
 
 export default function RootLayout({
@@ -32,7 +34,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${roboto.variable} ${poppins.variable}`}>
       <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <NextTopLoader color="black" showSpinner={false} />
+        <TRPCReactProvider>
+          {children}
+        </TRPCReactProvider>
       </body>
     </html>
   );
