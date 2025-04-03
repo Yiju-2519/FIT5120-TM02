@@ -27,6 +27,17 @@ const config = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  // Necessary for Netlify deployment
+  distDir: '.next',
+  // Set output to standalone for Netlify
+  output: 'standalone',
+  // Use trailingSlash to avoid issues with Netlify redirects
+  trailingSlash: true,
+  // Enable image optimization for external domains
+  images: {
+    domains: ['netlify.app', 'localhost'],
+    unoptimized: true,
+  },
 };
 
 export default config;

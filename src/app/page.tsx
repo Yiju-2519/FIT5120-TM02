@@ -22,6 +22,10 @@ export default function Home() {
   const [result, setResult] = useState<null | "secure" | "at-risk">(null);
   const [error, setError] = useState("");
   const [breaches, setBreaches] = useState<Breach[]>([]);
+  const [breachSummary, setBreachSummary] = useState({
+    count: 0,
+    affectedSites: ""
+  });
 
   const checkEmail = async () => {
     // Reset states
@@ -29,6 +33,7 @@ export default function Home() {
     setError("");
     setResult(null);
     setBreaches([]);
+    setBreachSummary({ count: 0, affectedSites: "" });
 
     if (!email || !email.includes("@")) {
       setError("Please enter a valid email address");
@@ -37,6 +42,8 @@ export default function Home() {
     }
 
     try {
+      console.log("Checking email:", email);
+      
       // Call the server-side API route
       const response = await fetch('/api/check-email', {
         method: 'POST',
@@ -44,7 +51,12 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email }),
+        // Add these options to help with Netlify
+        credentials: 'same-origin',
+        cache: 'no-store',
       });
+
+      console.log("API response status:", response.status);
 
       if (response.status === 429) {
         setError("Too many requests. Please try again in a moment.");
@@ -52,22 +64,45 @@ export default function Home() {
         return;
       }
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to check email');
+      let data;
+      try {
+        data = await response.json();
+        console.log("API Response data:", data);
+      } catch (jsonError) {
+        console.error("Error parsing JSON:", jsonError);
+        throw new Error("Failed to parse server response");
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        const errorMessage = data.error || `Server error (${response.status})`;
+        console.error("API error:", errorMessage);
+        throw new Error(errorMessage);
+      }
       
       if (data.status === 'at-risk') {
         setResult("at-risk");
-        setBreaches(data.breaches || []);
+        // Ensure breaches is always an array even if data.breaches is undefined
+        if (Array.isArray(data.breaches)) {
+          setBreaches(data.breaches);
+          setBreachSummary({
+            count: data.breachCount || data.breaches.length,
+            affectedSites: data.affectedSites || data.breaches.map((b: Breach) => b.title || b.name).join(", ")
+          });
+        } else {
+          console.error("Breaches data is not an array:", data.breaches);
+          setBreaches([]);
+        }
       } else {
         setResult("secure");
       }
     } catch (err) {
       console.error("Error checking email:", err);
-      setError("Failed to check email security. Please try again later.");
+      // Provide more specific error messages based on the error
+      if (err instanceof Error) {
+        setError(err.message || "Failed to check email security. Please try again later.");
+      } else {
+        setError("Failed to check email security. Please try again later.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -91,11 +126,13 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <div className="w-12">
               <Image 
-                src="/caknak-logo-2.png" 
+                src="/caknak-logo.png" 
                 alt="caKnak" 
                 width={48} 
                 height={48}
                 className="w-full h-auto"
+                priority={true}
+                unoptimized={true}
               />
             </div>
             <span className="text-xl font-medium text-gray-700">caKnak</span>
@@ -234,7 +271,19 @@ export default function Home() {
             </div>
             
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Recommended Actions</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Breach Summary</h3>
+              
+              <div className="mb-4 p-4 bg-red-50 rounded-lg border border-red-100">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-gray-700 font-medium">Total Breaches Found:</span>
+                  <span className="text-red-600 font-bold text-lg">{breachSummary.count}</span>
+                </div>
+                
+                <div className="flex flex-col">
+                  <span className="text-gray-700 font-medium mb-1">Affected Services:</span>
+                  <span className="text-gray-600 text-sm leading-relaxed">{breachSummary.affectedSites}</span>
+                </div>
+              </div>
               
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
@@ -260,7 +309,7 @@ export default function Home() {
               </div>
             </div>
             
-            {breaches.length > 0 && (
+            {breaches && breaches.length > 0 ? (
               <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">Breach Details</h3>
                 
@@ -268,19 +317,60 @@ export default function Home() {
                   {breaches.map((breach, index) => (
                     <div key={index} className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
                       <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-lg font-medium text-gray-800">{breach.title || breach.name}</h4>
-                        <span className="text-sm text-gray-500">{formatDate(breach.breachDate)}</span>
+                        <h4 className="text-lg font-medium text-gray-800">{breach.title || breach.name || 'Unknown Service'}</h4>
+                        <span className="text-sm text-gray-500">{breach.breachDate ? formatDate(breach.breachDate) : 'Unknown date'}</span>
                       </div>
-                      <p className="text-sm text-gray-600 mb-3">{breach.description}</p>
+                      
+                      {breach.domain && (
+                        <div className="mb-2">
+                          <span className="text-xs font-medium text-gray-500">Domain: </span>
+                          <a href={`https://${breach.domain}`} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline text-xs">
+                            {breach.domain}
+                          </a>
+                        </div>
+                      )}
+                      
+                      {breach.pwnCount && breach.pwnCount > 0 && (
+                        <div className="mb-2 text-sm">
+                          <span className="text-gray-500">Affected accounts: </span>
+                          <span className="font-medium text-red-600">{breach.pwnCount.toLocaleString()}</span>
+                        </div>
+                      )}
+                      
+                      <p className="text-sm text-gray-600 mb-3">{breach.description || 'No description available'}</p>
+                      
                       <div className="flex flex-wrap gap-2">
-                        {breach.dataClasses.map((dataClass, i) => (
-                          <span key={i} className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
-                            {dataClass}
+                        {breach.dataClasses && Array.isArray(breach.dataClasses) ? 
+                          breach.dataClasses.map((dataClass, i) => (
+                            <span key={i} className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
+                              {dataClass}
+                            </span>
+                          )) : 
+                          <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
+                            Data classes unavailable
                           </span>
-                        ))}
+                        }
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            ) : result === "at-risk" && (
+              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Breach Alert</h3>
+                <p className="text-gray-700 mb-4">
+                  Your email was found in data breaches, but we couldn't retrieve detailed information about the specific breaches.
+                  We still recommend taking immediate security actions to protect your accounts.
+                </p>
+                <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <div className="flex items-start gap-2">
+                    <svg className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-sm text-yellow-700">
+                      For security reasons, try checking your email at <a href="https://haveibeenpwned.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">haveibeenpwned.com</a> for more information.
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
