@@ -55,7 +55,7 @@ export default function Home() {
       
       const data = await response.json();
       
-      // 使用 sessionStorage 存儲數據，而不是通過 URL 參數傳遞
+      // Use sessionStorage to store data, not passing through URL parameters
       sessionStorage.setItem('emailCheck', JSON.stringify({
         email: email,
         status: data.status,
@@ -98,13 +98,13 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col bg-[#eef6ff]">
+    <main className="min-h-screen flex flex-col bg-[#f2f2f2]">
       {/* Navigation bar */}
       <NavBar />
 
       {/* Email Security Section */}
-      <section id="emailSecurity" className="py-20 px-4">
-        <div className="max-w-4xl mx-auto">
+      <section id="emailSecurity" className="py-20 px-4 pt-36">
+        <div className="max-w-4xl mx-auto py-20">
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center text-gray-800">Check Your Email Security</h2>
           <p className="text-lg text-gray-600 text-center mb-10">
             Enter your email to check if it has been involved in any known data breaches. We'll help you understand the risks and steps to secure your digital identity.

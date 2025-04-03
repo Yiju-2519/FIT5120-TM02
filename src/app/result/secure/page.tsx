@@ -62,7 +62,7 @@ export default function SecureResultPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <NavBar />
-        <div className="flex-grow flex items-center justify-center">
+        <div className="flex-grow flex items-center justify-center pt-16">
           <div className="animate-pulse text-gray-500">Loading...</div>
         </div>
         <Footer />
@@ -74,18 +74,15 @@ export default function SecureResultPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <NavBar />
       
-      <main className="flex-grow">
+      <main className="flex-grow pt-16">
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
           {/* Email Security Assessment Card */}
           <div className="mb-10 bg-white rounded-lg shadow-md overflow-hidden">
             <div className="p-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
-                <span className="mr-2">Email Security Assessment</span>
-              </h2>
               
-              <div className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg mb-6">
-                <div className="text-green-500 mb-4">
-                  <FaCheckCircle size={80} />
+              <div className="flex flex-col items-center justify-center p-12 bg-gray-50 rounded-lg mb-6">
+                <div className="text-blue-500 mb-4">
+                  <FaCheckCircle size={80}/>
                 </div>
                 
                 <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">Good News! Your Email Appears Secure</h1>
@@ -98,14 +95,14 @@ export default function SecureResultPage() {
                   We didn't find any records of your email address in known data breaches.
                 </p>
                 
-                <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-6 w-full">
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 w-full">
                   <div className="flex">
                     <div className="flex-shrink-0">
-                      <FaShieldAlt className="h-5 w-5 text-green-400" />
+                      <FaShieldAlt className="h-5 w-5 text-blue-400" />
                     </div>
                     <div className="ml-3">
-                      <h3 className="text-sm font-medium text-green-800">Safety Recommendations</h3>
-                      <div className="mt-2 text-sm text-green-700">
+                      <h3 className="text-sm font-medium text-blue-800">Safety Recommendations</h3>
+                      <div className="mt-2 text-sm text-blue-700">
                         <ul className="list-disc pl-5 space-y-1">
                           <li>Continue to use strong, unique passwords for all your accounts</li>
                           <li>Enable two-factor authentication where available</li>
@@ -119,7 +116,7 @@ export default function SecureResultPage() {
                 
                 <Link 
                   href="/"
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   Check Another Email
                 </Link>
@@ -132,7 +129,7 @@ export default function SecureResultPage() {
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-6">
                 <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                  <FaQuestionCircle className="mr-2 text-teal-500" />
+                  <FaQuestionCircle className="mr-2 text-blue-500" />
                   <span>Digital Citizenship Quiz</span>
                 </h2>
                 <p className="text-gray-600 mb-4">
@@ -140,7 +137,7 @@ export default function SecureResultPage() {
                 </p>
                 <Link
                   href="/citizenship-quiz"
-                  className="inline-flex items-center px-4 py-2 border border-teal-600 text-base font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                  className="inline-flex items-center px-4 py-2 border border-blue-600 text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   Take the Quiz
                 </Link>
@@ -159,7 +156,7 @@ export default function SecureResultPage() {
                 </p>
                 <Link
                   href="/common-risks"
-                  className="inline-flex items-center px-4 py-2 border border-teal-600 text-base font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                  className="inline-flex items-center px-4 py-2 border border-blue-600 text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   View Common Risks
                 </Link>

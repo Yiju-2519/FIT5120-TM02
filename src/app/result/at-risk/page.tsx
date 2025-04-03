@@ -91,7 +91,7 @@ export default function AtRiskResultPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <NavBar />
-        <div className="flex-grow flex items-center justify-center">
+        <div className="flex-grow flex items-center justify-center pt-16">
           <div className="animate-pulse text-gray-500">Loading...</div>
         </div>
         <Footer />
@@ -103,18 +103,15 @@ export default function AtRiskResultPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <NavBar />
       
-      <main className="flex-grow">
+      <main className="flex-grow pt-16">
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
           {/* Email Risk Assessment Card */}
           <div className="mb-10 bg-white rounded-lg shadow-md overflow-hidden">
             <div className="p-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
-                <span className="mr-2">Email Security Assessment</span>
-              </h2>
               
-              <div className="flex flex-col items-center justify-center p-6 bg-red-50 rounded-lg mb-6">
-                <div className="text-red-500 mb-4">
-                  <FaExclamationTriangle size={80} />
+              <div className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg mb-6">
+                <div className="text-red-400 mb-4">
+                  <FaExclamationTriangle size={80} color='#fe4859'/>
                 </div>
                 
                 <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">Warning: Your Email Has Been Compromised</h1>
@@ -130,14 +127,14 @@ export default function AtRiskResultPage() {
                   )}
                 </p>
                 
-                <div className="bg-orange-50 border-l-4 border-orange-400 p-4 mb-6 w-full">
+                <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 w-full">
                   <div className="flex">
                     <div className="flex-shrink-0">
-                      <FaLock className="h-5 w-5 text-orange-400" />
+                      <FaLock className="h-5 w-5 text-red-400" />
                     </div>
                     <div className="ml-3">
-                      <h3 className="text-sm font-medium text-orange-800">Immediate Actions Required</h3>
-                      <div className="mt-2 text-sm text-orange-700">
+                      <h3 className="text-sm font-medium text-red-800">Immediate Actions Required</h3>
+                      <div className="mt-2 text-sm text-red-700">
                         <ul className="list-disc pl-5 space-y-1">
                           <li>Change your password immediately on all affected sites</li>
                           <li>Use a unique, strong password for each account</li>
@@ -152,7 +149,7 @@ export default function AtRiskResultPage() {
                 
                 <Link 
                   href="/"
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 >
                   Check Another Email
                 </Link>
