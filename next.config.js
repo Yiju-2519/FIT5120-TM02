@@ -2,13 +2,8 @@
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
  */
-import "./src/env.js";
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-// ES Module compatible way to get dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Skip environment validation
+process.env.SKIP_ENV_VALIDATION = "true";
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -51,4 +46,4 @@ const config = {
   poweredByHeader: false,
 };
 
-export default config;
+module.exports = config;

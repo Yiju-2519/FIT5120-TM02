@@ -31,6 +31,7 @@ export default function AtRiskResultPage() {
   const router = useRouter();
   const [emailData, setEmailData] = useState<EmailCheckData | null>(null);
   const [expandedBreaches, setExpandedBreaches] = useState<{[key: string]: boolean}>({});
+  const [showBreachDetails, setShowBreachDetails] = useState(true);
   
   useEffect(() => {
     // Read data from sessionStorage
@@ -87,6 +88,17 @@ export default function AtRiskResultPage() {
       ...prev,
       [breachId]: !prev[breachId]
     }));
+  };
+  
+  // Function to toggle the entire Breach Details section
+  const toggleBreachesSection = () => {
+    setShowBreachDetails(prev => !prev);
+  };
+  
+  // Function to safely render HTML description, preserving links and formatting
+  const renderDescription = (htmlDescription: string) => {
+    // Return the HTML content directly for rendering with dangerouslySetInnerHTML
+    return htmlDescription;
   };
   
   if (!emailData) {
@@ -167,63 +179,77 @@ export default function AtRiskResultPage() {
                 </div>
               </div>
               
-              {/* Breaches Details */}
+              {/* Breaches Details with Section Toggle */}
               {emailData.breaches && emailData.breaches.length > 0 && (
-                <div className="mt-6">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Breach Details</h3>
-                  <div className="space-y-4">
-                    {emailData.breaches.map((breach, index) => (
-                      <div key={index} className="border border-gray-200 rounded-lg p-4">
-                        <div className="flex justify-between items-start">
-                          <h4 className="text-lg font-semibold text-gray-900">{breach.title || breach.name}</h4>
-                          <div className="flex items-center">
-                            <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full mr-2">
-                              {breach.breachDate ? formatDate(breach.breachDate) : 'Unknown date'}
-                            </span>
-                            <button 
-                              onClick={() => toggleBreachDetails(`breach-${index}`)}
-                              className="text-gray-500 hover:text-gray-700 focus:outline-none p-1"
-                              aria-label={expandedBreaches[`breach-${index}`] ? "Collapse details" : "Expand details"}
-                            >
-                              {expandedBreaches[`breach-${index}`] ? <FaChevronUp /> : <FaChevronDown />}
-                            </button>
+                <div className="mt-6 border border-gray-200 rounded-lg">
+                  <button 
+                    onClick={toggleBreachesSection}
+                    className="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors rounded-t-lg"
+                  >
+                    <h3 className="text-xl font-bold text-gray-800">Breach Details</h3>
+                    <span className="text-gray-500">
+                      {showBreachDetails ? <FaChevronUp /> : <FaChevronDown />}
+                    </span>
+                  </button>
+                  
+                  {showBreachDetails && (
+                    <div className="p-4 space-y-4">
+                      {emailData.breaches.map((breach, index) => (
+                        <div 
+                          key={index} 
+                          className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                          onClick={() => toggleBreachDetails(`breach-${index}`)}
+                        >
+                          <div className="flex justify-between items-start">
+                            <h4 className="text-lg font-semibold text-gray-900">{breach.title || breach.name}</h4>
+                            <div className="flex items-center">
+                              <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full mr-2">
+                                {breach.breachDate ? formatDate(breach.breachDate) : 'Unknown date'}
+                              </span>
+                              <span className="text-gray-500">
+                                {expandedBreaches[`breach-${index}`] ? <FaChevronUp /> : <FaChevronDown />}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                        
-                        {expandedBreaches[`breach-${index}`] && (
-                          <div className="mt-3 pt-3 border-t border-gray-100 animate-fadeIn">
-                            {breach.domain && (
-                              <p className="text-sm text-gray-600 mt-1">
-                                Website: {breach.domain}
-                              </p>
-                            )}
-                            {breach.description && (
-                              <p className="text-sm text-gray-700 mt-2">
-                                {breach.description}
-                              </p>
-                            )}
-                            {breach.dataClasses && breach.dataClasses.length > 0 && (
-                              <div className="mt-3">
-                                <h5 className="text-sm font-medium text-gray-700">Exposed data:</h5>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {breach.dataClasses.map((dataClass, i) => (
-                                    <span key={i} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
-                                      {dataClass}
-                                    </span>
-                                  ))}
+                          
+                          {expandedBreaches[`breach-${index}`] && (
+                            <div className="mt-3 pt-3 border-t border-gray-100 animate-fadeIn">
+                              {breach.domain && (
+                                <p className="text-sm text-gray-600 mt-1">
+                                  Website: {breach.domain}
+                                </p>
+                              )}
+                              {breach.description && (
+                                <div className="text-sm text-gray-700 mt-2">
+                                  <div 
+                                    dangerouslySetInnerHTML={{ __html: renderDescription(breach.description) }} 
+                                    className="breach-description"
+                                  />
                                 </div>
-                              </div>
-                            )}
-                            {breach.pwnCount && (
-                              <p className="text-xs text-gray-500 mt-2">
-                                Affected accounts: {breach.pwnCount.toLocaleString()}
-                              </p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                              )}
+                              {breach.dataClasses && breach.dataClasses.length > 0 && (
+                                <div className="mt-3">
+                                  <h5 className="text-sm font-medium text-gray-700">Exposed data:</h5>
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {breach.dataClasses.map((dataClass, i) => (
+                                      <span key={i} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+                                        {dataClass}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              {breach.pwnCount && (
+                                <p className="text-xs text-gray-500 mt-2">
+                                  Affected accounts: {breach.pwnCount.toLocaleString()}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

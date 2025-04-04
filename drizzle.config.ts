@@ -8,5 +8,5 @@ export default {
   dbCredentials: {
     url: env.DATABASE_URL,
   },
-  tablesFilter: ["nafas_dev_*"],
+  tablesFilter: ["caKnak_dev_*"],
 } satisfies Config;

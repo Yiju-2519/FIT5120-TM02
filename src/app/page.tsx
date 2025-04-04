@@ -62,13 +62,13 @@ export default function Home() {
         breachCount: data.breachCount || 0,
         affectedSites: data.affectedSites || '',
         breaches: data.breaches && Array.isArray(data.breaches) 
-          ? data.breaches.slice(0, 5).map((breach: any) => ({
+          ? data.breaches.map((breach: any) => ({
               name: breach.name,
               title: breach.title,
               domain: breach.domain,
               breachDate: breach.breachDate,
-              description: breach.description?.substring(0, 150) + (breach.description?.length > 150 ? '...' : ''),
-              dataClasses: breach.dataClasses?.slice(0, 5),
+              description: breach.description || 'No description available',
+              dataClasses: breach.dataClasses || [],
               pwnCount: breach.pwnCount
             }))
           : []
@@ -157,7 +157,8 @@ export default function Home() {
           </div>
           
           <div className="text-center">
-            <p className="text-sm text-gray-500 mb-2">Your data is secured with encryption</p>
+            <p className="text-sm text-gray-500 mb-2">Your data is secured with encryption. 
+            <Link href="/privacy-protection" className="text-blue-500 hover:text-blue-600"> Learn More</Link></p>
             <div className="flex justify-center gap-4">
               <span className="inline-flex items-center text-sm text-gray-500">
                 <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -255,7 +256,7 @@ export default function Home() {
           
           <div className="mt-8 text-center">
             <Link 
-              href="/digital-security-risks"
+              href="/data-breach-education"
               className="bg-blue-600 text-white py-3 px-6 rounded-md font-medium hover:bg-blue-700 transition-colors">
               Learn More About Digital Security Risks
             </Link>
@@ -318,9 +319,9 @@ export default function Home() {
         </div>
         
         <div className="mt-12 text-center">
-          <button className="bg-blue-600 text-white py-3 px-8 rounded-md font-medium hover:bg-blue-700 transition-colors">
+          <Link href="/education-center" className="bg-blue-600 text-white py-3 px-8 rounded-md font-medium hover:bg-blue-700 transition-colors">
             Explore Full Digital Citizenship Education
-          </button>
+          </Link>
         </div>
       </section>
 

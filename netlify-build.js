@@ -3,16 +3,11 @@
  * This script ensures that tRPC modules and other dependencies are properly resolved during Netlify build
  */
 
-import fs from 'fs';
-import path from 'path';
-import { execSync } from 'child_process';
-import { fileURLToPath } from 'url';
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
 
 console.log('🚀 Starting Netlify build pre-processing...');
-
-// Get the current directory using ES modules pattern
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Ensure all dependencies are installed completely
 console.log('📦 Checking dependencies...');
