@@ -2,11 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Basic font settings */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-poppins), system-ui, sans-serif;
+/* Breach description styles */
+.breach-description {
+  line-height: 1.5;
+  color: #4b5563;
 }
 
-p, a, li, span, body {
-  font-family: var(--font-roboto), system-ui, sans-serif;
+.breach-description a {
+  color: #3b82f6;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.breach-description a:hover {
+  color: #2563eb;
+}
+
+.breach-description p {
+  margin-bottom: 0.75rem;
+}
+
+.breach-description p:last-child {
+  margin-bottom: 0;
+}
+
+/* Global font settings */
+html, body {
+  font-family: var(--font-body), sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+p, li, span, div, button, input, textarea, select {
+  font-family: var(--font-body), sans-serif;
+}
+
+a {
+  font-family: var(--font-body), sans-serif;
+  transition: color 0.2s;
+}
+
+/* Additional modern nav styles */
+.nav-link {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.9rem;
 } 

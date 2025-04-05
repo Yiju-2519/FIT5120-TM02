@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import NavBar from '../../components/NavBar';
-import Footer from '../../components/Footer';
+import NavBar from '../../../components/NavBar';
+import Footer from '../../../components/Footer';
 import { FaExclamationTriangle, FaLock, FaShieldAlt, FaQuestionCircle, FaChevronDown, FaChevronUp, FaUserShield } from 'react-icons/fa';
 import { MdPhishing } from 'react-icons/md';
 import { AiOutlineMail } from 'react-icons/ai';

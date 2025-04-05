@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import NavBar from '../../components/NavBar';
-import Footer from '../../components/Footer';
+import NavBar from '../../../components/NavBar';
+import Footer from '../../../components/Footer';
 import { FaCheckCircle, FaShieldAlt, FaQuestionCircle, FaExclamationTriangle } from 'react-icons/fa';
 
 type EmailCheckData = {
