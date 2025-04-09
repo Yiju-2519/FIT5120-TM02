@@ -176,8 +176,8 @@ export default function Home() {
             </div>
             
             <div className="text-center">
-              <p className="text-sm text-gray-500 mb-2">Your data is secured with encryption. 
-              <Link href="/privacy-protection" className="text-[#374b54] hover:text-[#97afc1]"> Learn More</Link></p>
+              <p className="text-sm text-gray-500 mb-2">Your data is secured with encryption.&#20;
+              <Link href="https://haveibeenpwned.com/Privacy" className="text-[#374b54] hover:text-[#97afc1] underline">Learn More</Link></p>
               <div className="flex justify-center gap-4">
                 <span className="inline-flex items-center text-sm text-gray-500">
                   <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
