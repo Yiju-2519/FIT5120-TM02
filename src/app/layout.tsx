@@ -35,8 +35,8 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${montserrat.variable} ${lato.variable}`}>
-      <body className={lato.className}>
-        <NextTopLoader color="#A99479" showSpinner={false} />
+      <body className={`${lato.className} bg-[#f9f9f9]`}>
+        <NextTopLoader color="#667d88" showSpinner={false} />
         <TRPCReactProvider>
           {children}
           <Toaster position="bottom-right" />

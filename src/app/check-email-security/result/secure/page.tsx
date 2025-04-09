@@ -7,6 +7,16 @@ import NavBar from '../../../components/NavBar';
 import Footer from '../../../components/Footer';
 import { FaCheckCircle, FaShieldAlt, FaQuestionCircle, FaExclamationTriangle } from 'react-icons/fa';
 
+// 莫兰迪蓝灰色系 - 与主页保持一致
+const morandiColors = {
+  lightest: "#e3edf3", // 最浅蓝灰色
+  light: "#d3e1ea",    // 浅蓝灰色
+  mild: "#c0d2de",     // 中蓝灰色
+  medium: "#b2c6d4",   // 深蓝灰色
+  text: "#374b54",     // 文本蓝灰色
+  hover: "#97afc1"     // 悬停蓝灰色
+};
+
 type EmailCheckData = {
   email: string;
   status: string;
@@ -34,7 +44,7 @@ export default function SecureResultPage() {
       
       // Confirm this is secure data
       if (parsedData.status !== 'secure') {
-        router.push('/result/at-risk');
+        router.push('/check-email-security/result/at-risk');
         return;
       }
       
@@ -60,8 +70,8 @@ export default function SecureResultPage() {
   
   if (!emailData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <NavBar />
+      <div className="flex flex-col min-h-screen bg-[#f9f9f9]">
+        <NavBar showTitle={true} />
         <div className="flex-grow flex items-center justify-center pt-16">
           <div className="animate-pulse text-gray-500">Loading...</div>
         </div>
@@ -71,115 +81,112 @@ export default function SecureResultPage() {
   }
   
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <NavBar />
+    <div className="flex flex-col min-h-screen bg-[#f9f9f9]">
+      <NavBar showTitle={true} />
       
-      <main className="flex-grow pt-16">
-        <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-          {/* Email Security Assessment Card */}
-          <div className="mb-10 bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="p-6">
+      <main className="flex-grow container mx-auto px-6 pt-24 pb-10">
+        {/* Email Security Assessment Card */}
+        <div className="mb-10 bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6">
+            <div className="flex flex-col items-center justify-center p-6 rounded-lg mb-4">
+              <div className="text-green-500 mb-6">
+                <FaCheckCircle size={80}/>
+              </div>
               
-              <div className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg mb-4">
-                <div className="text-blue-500 mb-4">
-                  <FaCheckCircle size={80}/>
-                </div>
-                
-                <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">Good News! Your Email Appears Secure</h1>
-                
-                <p className="text-gray-600 mb-4 text-center">
-                  {maskEmail(emailData.email)}
-                </p>
-                
-                <p className="text-gray-600 mb-4 text-center">
-                  We didn't find any records of your email address in known data breaches.
-                </p>
-                
-                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4 w-full">
-                  <div className="flex">
-                    <div className="flex-shrink-0">
-                      <FaShieldAlt className="h-5 w-5 text-blue-400" />
-                    </div>
-                    <div className="ml-3">
-                      <h3 className="text-sm font-medium text-blue-800">Safety Recommendations</h3>
-                      <div className="mt-2 text-sm text-blue-700">
-                        <ul className="list-disc pl-5 space-y-1">
-                          <li>Continue to use strong, unique passwords for all your accounts</li>
-                          <li>Enable two-factor authentication where available</li>
-                          <li>Regularly monitor your accounts for suspicious activity</li>
-                          <li>Be cautious when sharing personal information online</li>
-                        </ul>
-                      </div>
+              <h1 className="text-2xl font-bold text-[#374b54] mb-4 text-center">Good News! Your Email Appears Secure</h1>
+              
+              <p className="text-gray-600 mb-4 text-center">
+                {maskEmail(emailData.email)}
+              </p>
+              
+              <p className="text-gray-600 mb-6 text-center">
+                We didn't find any records of your email address in known data breaches.
+              </p>
+              
+              <div className="bg-[#e3edf3] border-l-4 border-[#b2c6d4] p-4 mb-6 w-full">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <FaShieldAlt className="h-5 w-5 text-[#374b54]" />
+                  </div>
+                  <div className="ml-3">
+                    <h3 className="text-sm font-medium text-[#374b54]">Safety Recommendations</h3>
+                    <div className="mt-2 text-sm text-gray-600">
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>Continue to use strong, unique passwords for all your accounts</li>
+                        <li>Enable two-factor authentication where available</li>
+                        <li>Regularly monitor your accounts for suspicious activity</li>
+                        <li>Be cautious when sharing personal information online</li>
+                      </ul>
                     </div>
                   </div>
                 </div>
-                
-                <Link 
-                  href="/education-center"
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Learn How to Further Protect Your Digital Identity
-                </Link>
               </div>
-            </div>
-          </div>
-          
-          {/* Digital Citizenship Quiz Section */}
-          <div className="grid md:grid-cols-2 gap-8 mb-4">
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="p-6">
-                <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                  <FaQuestionCircle className="mr-2 text-blue-500" />
-                  <span>Digital Citizenship Quiz</span>
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  Test your knowledge about online safety and digital citizenship with our interactive quiz.
-                </p>
-                <Link
-                  href="/knowledge-quiz"
-                  className="inline-flex items-center px-4 py-2 border border-blue-600 text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Take the Quiz
-                </Link>
-              </div>
-            </div>
-            
-            {/* Common Security Risks Section */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="p-6">
-                <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                  <FaExclamationTriangle className="mr-2 text-amber-500" />
-                  <span>Common Security Risks</span>
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  Learn about common online security risks and how to protect yourself from them.
-                </p>
-                <Link
-                  href="/data-breach-education"
-                  className="inline-flex items-center px-4 py-2 border border-blue-600 text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  View Common Risks
-                </Link>
-              </div>
+              
+              <Link 
+                href="/digital-security-risks"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-[#374b54] hover:bg-[#97afc1] transition-colors duration-300"
+              >
+                Learn How to Further Protect Your Digital Identity
+              </Link>
             </div>
           </div>
         </div>
+        
+        {/* Digital Citizenship Quiz and Common Security Risks Sections */}
+        <div className="grid md:grid-cols-2 gap-8 mb-8">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-6">
+              <h2 className="text-xl font-bold text-[#374b54] mb-4 flex items-center">
+                <FaQuestionCircle className="mr-2 text-[#b2c6d4]" />
+                <span>Digital Citizenship Quiz</span>
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Test your knowledge about online safety and digital citizenship with our interactive quiz.
+              </p>
+              <Link
+                href="/security-quiz"
+                className="inline-flex items-center px-4 py-2 border border-[#374b54] text-base font-medium rounded-md text-[#374b54] bg-white hover:bg-[#e3edf3] transition-colors duration-300"
+              >
+                Take the Quiz
+              </Link>
+            </div>
+          </div>
+          
+          {/* Common Security Risks Section */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-6">
+              <h2 className="text-xl font-bold text-[#374b54] mb-4 flex items-center">
+                <FaExclamationTriangle className="mr-2 text-amber-500" />
+                <span>Common Security Risks</span>
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Learn about common online security risks and how to protect yourself from them.
+              </p>
+              <Link
+                href="/digital-security-risks"
+                className="inline-flex items-center px-4 py-2 border border-[#374b54] text-base font-medium rounded-md text-[#374b54] bg-white hover:bg-[#e3edf3] transition-colors duration-300"
+              >
+                View Common Risks
+              </Link>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-8 mb-10">
+          <Link 
+            href="/check-email-security"
+            className="w-full sm:w-56 inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-[#374b54] hover:bg-[#97afc1] transition-colors duration-300"
+          >
+            Check Another Email
+          </Link>
+          <Link
+            href="/digital-security-risks"
+            className="w-full sm:w-56 inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-[#374b54] bg-white hover:bg-[#e3edf3] transition-colors duration-300"
+          >
+            Digital Security Guides
+          </Link>
+        </div>
       </main>
-      
-      <div className="flex justify-center space-x-8 pb-6">
-        <Link 
-          href="/"
-          className="w-56 inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          Check Another Email
-        </Link>
-        <Link
-          href="/digital-security-guides"
-          className="w-56 inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-black bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-        >
-          Digital Security Guides
-        </Link>
-      </div>
       
       <Footer />
     </div>

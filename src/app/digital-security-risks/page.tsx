@@ -9,141 +9,122 @@ import { FaShieldAlt, FaLock, FaUserShield, FaFileContract, FaBan, FaFish } from
 import { MdPhishing } from 'react-icons/md';
 import { AiOutlineMail } from 'react-icons/ai';
 
+// 莫兰迪蓝灰色系 - 与主页保持一致
+const morandiColors = {
+  lightest: "#e3edf3", // 最浅蓝灰色
+  light: "#d3e1ea",    // 浅蓝灰色
+  mild: "#c0d2de",     // 中蓝灰色
+  medium: "#b2c6d4",   // 深蓝灰色
+  text: "#374b54",     // 文本蓝灰色
+  hover: "#97afc1"     // 悬停蓝灰色
+};
+
 export default function DigitalSecurityRisksPage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="flex flex-col min-h-screen bg-[#f9f9f9]">
       <NavBar />
       
-      <main className="flex-grow pt-16">
-        <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
-            <div className="bg-blue-50 p-8 flex items-center justify-center">
-              <div className="mr-6 text-blue-500">
-                <FaShieldAlt size={60} />
+      <main className="flex-grow container mx-auto px-6 py-10">
+        <section className="mb-12">
+          <h1 className="text-3xl font-bold mb-4 text-[#374b54]">Digital Security Risks</h1>
+          <p className="text-lg mb-6 text-[#374b54]">
+            Learn about common security risks associated with digital communications and how to protect yourself.
+          </p>
+          
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 border border-gray-100">
+            <h2 className="text-2xl font-semibold mb-4 text-[#374b54]">Your information may be used for:</h2>
+            
+            <div className="space-y-6">
+              <div className="flex items-start">
+                <div className="mr-4 text-red-500">
+                  <FaUserShield size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-medium mb-1 text-[#374b54]">Identity Theft</h3>
+                  <p className="text-gray-600">
+                    Criminals can use your personal information to impersonate you, open new accounts, 
+                    make purchases, or obtain loans in your name, causing financial damage and affecting your credit score.
+                  </p>
+                </div>
               </div>
-              <h1 className="text-3xl font-bold text-gray-800">How We Safeguard Your Data</h1>
+              
+              <div className="flex items-start">
+                <div className="mr-4 text-red-500">
+                  <MdPhishing size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-medium mb-1 text-[#374b54]">Phishing Attacks</h3>
+                  <p className="text-gray-600">
+                    Attackers may use your information to create convincing phishing emails or messages 
+                    designed to steal more sensitive data like passwords or banking details.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <div className="mr-4 text-red-500">
+                  <AiOutlineMail size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-medium mb-1 text-[#374b54]">Spam and Unwanted Communications</h3>
+                  <p className="text-gray-600">
+                    Your email address may be added to spam lists, resulting in an increase of 
+                    unwanted communications, advertisements, and potentially malicious messages.
+                  </p>
+                </div>
+              </div>
             </div>
-            
-            <div className="bg-blue-50 p-8">
-              <section className="mb-8">
-                <h2 className="text-xl font-bold text-gray-800 mb-4">Introduction:</h2>
-                <p className="text-gray-700 mb-4">
-                  Thanks for your interest in our services.
-                </p>
-                <p className="text-gray-700 mb-4">
-                  We use a reliable, external service to check if your email has been involved in data breaches. 
-                  This service adheres to rigorous security standards and does not store your information.
-                </p>
-                <p className="text-gray-700 mb-4">
-                  Your email is only used for the purpose of breach detection and is deleted immediately after processing.
-                </p>
-              </section>
-            </div>
-            
-            <div className="p-8">  
-              <section className="mb-8">
-                <h2 className="text-lg font-bold text-gray-800 mb-3">1. Data Collection & Usage</h2>
-                <div className="ml-5 mb-4">
-                  <h3 className="font-medium text-gray-800 mb-2">a. Minimal Input:</h3>
-                  <ul className="list-roman ml-6 space-y-1 text-gray-700">
-                    <li>i. We only require your email address to verify its exposure in data breaches.</li>
-                    <li>ii. No other personal information is collected.</li>
-                  </ul>
-                </div>
-                <div className="ml-5 mb-4">
-                  <h3 className="font-medium text-gray-800 mb-2">b. Third-Party Verification:</h3>
-                  <ul className="list-roman ml-6 space-y-1 text-gray-700">
-                    <li>i. We use a trusted, industry-leading service to check for breaches, ensuring results are accurate and up-to-date.</li>
-                  </ul>
-                </div>
-                <div className="ml-5 mb-4">
-                  <h3 className="font-medium text-gray-800 mb-2">c. No Tracking:</h3>
-                  <ul className="list-roman ml-6 space-y-1 text-gray-700">
-                    <li>i. We do not log your IP address, browser details, or device information.</li>
-                  </ul>
-                </div>
-              </section>
-              
-              <section className="mb-8">
-                <h2 className="text-lg font-bold text-gray-800 mb-3">2. Data Handling</h2>
-                <div className="ml-5 mb-4">
-                  <h3 className="font-medium text-gray-800 mb-2">a. Zero Storage:</h3>
-                  <ul className="list-roman ml-6 space-y-1 text-gray-700">
-                    <li>i. Your email address is never stored in our systems or databases.</li>
-                    <li>ii. We process it in real-time and discard it immediately.</li>
-                  </ul>
-                </div>
-                <div className="ml-5 mb-4">
-                  <h3 className="font-medium text-gray-800 mb-2">b. Encrypted Transmission:</h3>
-                  <ul className="list-roman ml-6 space-y-1 text-gray-700">
-                    <li>i. All data is transmitted via HTTPS and protected with encryption during processing.</li>
-                  </ul>
-                </div>
-              </section>
-              
-              <section className="mb-8">
-                <h2 className="text-lg font-bold text-gray-800 mb-3">3. User Rights</h2>
-                <div className="ml-5 mb-4">
-                  <h3 className="font-medium text-gray-800 mb-2">a. Opt-Out:</h3>
-                  <ul className="list-roman ml-6 space-y-1 text-gray-700">
-                    <li>i. Choose not to receive optional breach alerts or updates.</li>
-                  </ul>
-                </div>
-              </section>
-              
-              <section className="mb-8">
-                <h2 className="text-lg font-bold text-gray-800 mb-3">4. Security Standards</h2>
-                <div className="ml-5 mb-4">
-                  <h3 className="font-medium text-gray-800 mb-2">a. Trusted Partnerships:</h3>
-                  <ul className="list-roman ml-6 space-y-1 text-gray-700">
-                    <li>i. Our third-party breach detection partner adheres to strict security protocols.</li>
-                    <li>ii. No password hash storage, GDPR compliance.</li>
-                  </ul>
-                </div>
-                <div className="ml-5 mb-4">
-                  <h3 className="font-medium text-gray-800 mb-2">b. Regular Audits:</h3>
-                  <ul className="list-roman ml-6 space-y-1 text-gray-700">
-                    <li>i. We independently verify the security of our systems and third-party integrations.</li>
-                  </ul>
-                </div>
-              </section>
-              
-              <section className="mb-8">
-                <h2 className="text-lg font-bold text-gray-800 mb-3">5. Compliance</h2>
-                <div className="ml-5 mb-4">
-                  <h3 className="font-medium text-gray-800 mb-2">a. Legal Adherence:</h3>
-                  <ul className="list-roman ml-6 space-y-1 text-gray-700">
-                    <li>i. We comply with Malaysian Personal Data Protection Act (PDPA) and global standards like GDPR.</li>
-                  </ul>
-                </div>
-              </section>
-              
-              <section className="mb-4">
-                <h2 className="text-lg font-bold text-gray-800 mb-3">6. Prohibited Uses</h2>
-                <div className="ml-5 mb-4">
-                  <h3 className="font-medium text-gray-800 mb-2">a. To protect privacy and maintain service integrity, we ask that you:</h3>
-                  <ul className="list-roman ml-6 space-y-1 text-gray-700">
-                    <li>i. No disrupte the normal operation of our Services or impairing other users' access.</li>
-                    <li>ii. Not use our tool for third-party benefits (e.g., clients, affiliates) without written permission.</li>
-                    <li>iii. No introduce malware (viruses, worms, etc.) into our Services.</li>
-                    <li>iv. No attempte unauthorized access to our systems, networks, or data.</li>
-                    <li>v. Avoid reselling, rebranding, or reverse-engineering our service.</li>
-                    <li>vi. Refrain from actions that could disrupt our systems or harm other users.</li>
-                  </ul>
-                </div>
-              </section>
-            </div>
+          </div>
+        </section>
+        
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold mb-4 text-[#374b54]">How We Protect Your Data</h2>
+          
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-100">
+            <h3 className="text-xl font-semibold mb-3 text-[#374b54]">Minimal Data Collection</h3>
+            <p className="text-gray-600 mb-4">
+              We only require your email address to verify potential breaches. 
+              We don't store personal information beyond what's necessary for the service.
+            </p>
           </div>
           
-          <div className="flex justify-center space-x-8 mt-8">
-            <Link 
-              href="/"
-              className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Return to Email Check
-            </Link>
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-100">
+            <h3 className="text-xl font-semibold mb-3 text-[#374b54]">Real-time Processing</h3>
+            <p className="text-gray-600 mb-4">
+              Your email is processed in real-time to check against known data breaches. 
+              We don't log user queries or maintain a database of checked emails.
+            </p>
           </div>
-        </div>
+          
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+            <h3 className="text-xl font-semibold mb-3 text-[#374b54]">Transparent Data Handling</h3>
+            <p className="text-gray-600 mb-4">
+              We're transparent about how your data is used. Your email is only used to check for breaches 
+              and you can opt out of any future communications at any time.
+            </p>
+          </div>
+        </section>
+        
+        <section>
+          <h2 className="text-2xl font-bold mb-4 text-[#374b54]">Your Rights</h2>
+          
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+            <p className="text-gray-600 mb-4">
+              You have the right to:
+            </p>
+            <ul className="list-disc pl-6 text-gray-600 space-y-2">
+              <li>Know what personal data we process about you</li>
+              <li>Request correction of inaccurate data</li>
+              <li>Request deletion of your data</li>
+              <li>Opt-out of breach alerts</li>
+              <li>Object to the processing of your data</li>
+            </ul>
+            <p className="mt-4 text-gray-600">
+              We comply with data protection regulations, including the Malaysian Personal Data Protection Act 
+              (PDPA) and General Data Protection Regulation (GDPR) where applicable.
+            </p>
+          </div>
+        </section>
       </main>
       
       <Footer />

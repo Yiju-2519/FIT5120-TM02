@@ -6,14 +6,14 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FaEnvelope, FaShieldAlt, FaBook, FaClipboardCheck, FaGlobe, FaChevronDown } from 'react-icons/fa';
 
-// Define a lighter tea color palette (from lightest to darkest)
+// Define a Morandi blue-gray color palette (from lightest to darkest)
 const teaColors = {
-    lightest: "#F9F6F2", // The lightest tea color
-    light: "#F2ECE3",    // The light tea color
-    mild: "#EADFD0",     // The mild tea color
-    medium: "#E0D3C1",   // The medium tea color
-    text: "#6B5B4B",     // The tea text color
-    hover: "#D1BEA6"     // The hover tea color
+    lightest: "#e3edf3", // The lightest blue-gray color
+    light: "#d3e1ea",    // The light blue-gray color
+    mild: "#c0d2de",     // The mild blue-gray color
+    medium: "#b2c6d4",   // The medium blue-gray color
+    text: "#374b54",     // The blue-gray text color
+    hover: "#97afc1"     // The hover blue-gray color
 };
 
 export default function Home() {
@@ -81,7 +81,7 @@ export default function Home() {
         }
     ];
 
-    return (
+  return (
         <main className="min-h-screen bg-white flex flex-col">
             {/* The top area - only contains the brand title and navigation bar */}
             <header className="border-b border-gray-100 pt-8">
@@ -93,7 +93,7 @@ export default function Home() {
                         width={70}
                         height={70}
                     />
-                </div>
+        </div>
 
                 {/* The right language switch dropdown menu - placed on the right of the main functional block */}
                 <div className="absolute right-20 top-3 -mr-16" ref={langDropdownRef}>
@@ -109,25 +109,25 @@ export default function Home() {
                     {/* The language dropdown menu */}
                     {showLanguageDropdown && (
                         <div className="absolute right-0 mt-1 w-24 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-                            <button
+                <button
                                 onClick={() => changeLanguage('EN')}
                                 className="block w-full text-left px-4 py-2 hover:bg-gray-50"
-                            >
+                >
                                 English
-                            </button>
-                            <button
+                </button>
+                <button
                                 onClick={() => changeLanguage('ZH')}
                                 className="block w-full text-left px-4 py-2 hover:bg-gray-50"
-                            >
+                >
                                 中文
-                            </button>
-                        </div>
+                </button>
+              </div>
                     )}
-                </div>
+                  </div>
                 {/* The middle brand title - moved up */}
                 <div className="text-center mb-8">
                     <h1 className="text-5xl font-bold tracking-wide">caKnak</h1>
-                </div>
+                  </div>
 
                 {/* The navigation menu - increased distance from the brand title */}
                 <div className="container mx-auto px-6">
@@ -172,10 +172,10 @@ export default function Home() {
                                 onClick={() => window.location.href = section.link}
                             >
                                 <div className="absolute inset-0 p-8 flex flex-col justify-center items-center text-center">
-                                    <div className="mb-4 text-[#6B5B4B]">
+                                    <div className="mb-4 text-[#374b54]">
                                         {section.icon}
                                     </div>
-                                    <h3 className="text-2xl font-medium mb-2 text-[#6B5B4B]">{section.title}</h3>
+                                    <h3 className="text-2xl font-medium mb-2 text-[#374b54]">{section.title}</h3>
 
                                     {/* Only show the description when hovering - with a blooming animation effect */}
                                     <motion.div
@@ -185,24 +185,24 @@ export default function Home() {
                                             height: hoveredSection === section.id ? 'auto' : 0
                                         }}
                                         transition={{ duration: 0.3 }}
-                                        className="text-base text-[#6B5B4B] max-w-xs"
+                                        className="text-base text-[#374b54] max-w-xs"
                                     >
                                         {section.description}
                                     </motion.div>
                                 </div>
                             </motion.div>
                         ))}
-                    </div>
-                </div>
-            </section>
+          </div>
+        </div>
+      </section>
 
             {/* The website footer */}
             <footer className="py-8 bg-[#F9F9F9] text-center text-xs text-gray-500">
                 <div className="container mx-auto">
                     <p className="mb-2">© 2025 caKnak. All rights reserved.</p>
                     <p>Your trusted resource for digital safety, security, and citizenship education.</p>
-                </div>
-            </footer>
-        </main>
-    );
+        </div>
+      </footer>
+    </main>
+  );
 }
