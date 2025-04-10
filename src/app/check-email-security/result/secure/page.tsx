@@ -7,14 +7,14 @@ import NavBar from '../../../components/NavBar';
 import Footer from '../../../components/Footer';
 import { FaCheckCircle, FaShieldAlt, FaQuestionCircle, FaExclamationTriangle } from 'react-icons/fa';
 
-// 莫兰迪蓝灰色系 - 与主页保持一致
+// Morandi blue-gray color scheme - consistent with the homepage
 const morandiColors = {
-  lightest: "#e3edf3", // 最浅蓝灰色
-  light: "#d3e1ea",    // 浅蓝灰色
-  mild: "#c0d2de",     // 中蓝灰色
-  medium: "#b2c6d4",   // 深蓝灰色
-  text: "#374b54",     // 文本蓝灰色
-  hover: "#97afc1"     // 悬停蓝灰色
+  lightest: "#e3edf3", // lightest blue-gray
+  light: "#d3e1ea",    // light blue-gray
+  mild: "#c0d2de",     // medium blue-gray
+  medium: "#b2c6d4",   // dark blue-gray
+  text: "#374b54",     // text blue-gray
+  hover: "#97afc1"     // hover blue-gray
 };
 
 type EmailCheckData = {

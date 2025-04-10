@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-// Get API key from environment variables or use the hardcoded one as fallback
-const HIBP_API_KEY = process.env.HIBP_API_KEY || '9b943109e49542d59147c95d9d73a945';
+// Get API key from environment variables
+const HIBP_API_KEY = process.env.HIBP_API_KEY;
 
 // Enhanced logging to debug issues in Netlify environment
 const logEnvironmentInfo = () => {

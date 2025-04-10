@@ -113,11 +113,11 @@ export default function Home() {
       <NavBar showTitle={true} />
 
       <div className="relative">
-        {/* Background blue area - only occupies the top half of the page */}
-        <div className="absolute top-0 left-0 right-0 h-[75vh] bg-[#b9d0dc] z-0"></div>
+        {/* Background blue area - full page */}
+        <div className="absolute inset-0 bg-[#b9d0dc] z-0"></div>
         
         {/* Content area - on top of the background */}
-        <section id="emailSecurity" className="relative z-10 pt-24 pb-12 px-4">
+        <section id="emailSecurity" className="relative z-10 pt-8 px-4">
           <div className="max-w-4xl mx-auto py-8">
             <img 
               src="/logo-removebg.png" 
