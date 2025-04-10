@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 
-// Get API key from environment variables
-const HIBP_API_KEY = process.env.HIBP_API_KEY;
+// Get API key from environment variables - with Netlify support
+const HIBP_API_KEY = process.env.CONTEXT === 'production' 
+  ? process.env.HIBP_API_KEY 
+  : process.env.NETLIFY_HIBP_API_KEY || process.env.HIBP_API_KEY;
 
 // Enhanced logging to debug issues in Netlify environment
 const logEnvironmentInfo = () => {
