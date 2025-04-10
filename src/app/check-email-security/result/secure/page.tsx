@@ -123,7 +123,7 @@ export default function SecureResultPage() {
               </div>
               
               <Link 
-                href="/digital-security-risks"
+                href="/learn-security"
                 className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-[#374b54] hover:bg-[#97afc1] transition-colors duration-300"
               >
                 Learn How to Further Protect Your Digital Identity
@@ -163,7 +163,7 @@ export default function SecureResultPage() {
                 Learn about common online security risks and how to protect yourself from them.
               </p>
               <Link
-                href="/digital-security-risks"
+                href="/common-risks"
                 className="inline-flex items-center px-4 py-2 border border-[#374b54] text-base font-medium rounded-md text-[#374b54] bg-white hover:bg-[#e3edf3] transition-colors duration-300"
               >
                 View Common Risks
@@ -180,7 +180,7 @@ export default function SecureResultPage() {
             Check Another Email
           </Link>
           <Link
-            href="/digital-security-risks"
+            href="/security-guides"
             className="w-full sm:w-56 inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-[#374b54] bg-white hover:bg-[#e3edf3] transition-colors duration-300"
           >
             Digital Security Guides

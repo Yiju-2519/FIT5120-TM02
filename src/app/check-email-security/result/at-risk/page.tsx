@@ -147,7 +147,7 @@ export default function AtRiskResultPage() {
               </p>
               
               <Link 
-                href="/digital-security-risks"
+                href="/recovery-steps"
                 className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-500 hover:bg-red-600 transition-colors duration-300"
               >
                 View Detailed Recovery Steps
@@ -312,7 +312,7 @@ export default function AtRiskResultPage() {
             Check Another Email
           </Link>
           <Link
-            href="/digital-security-risks"
+            href="/security-guides"
             className="w-full sm:w-56 inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-[#374b54] bg-white hover:bg-[#e3edf3] transition-colors duration-300"
           >
             Digital Security Guides
